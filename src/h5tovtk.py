@@ -45,6 +45,10 @@ def saveAsVTU( h5data , outputName ):
   
   grid = vtk.vtkUnstructuredGrid()
   
+  # -- Read metadata
+  
+  cycle = h5data.attrs["cycle"]
+  
   # -- Read element connectivity
   
   grp  = h5data['elements']
@@ -70,7 +74,7 @@ def saveAsVTU( h5data , outputName ):
   
   nElm = len(pointers)
   nNod = coordinates.shape[0]
-  rank = coordinates.shape[1]
+  nRan = coordinates.shape[1]
   
   if coordinates.shape[1] == 2:
     newcrd = np.zeros(shape=(nNod,3))
@@ -91,11 +95,19 @@ def saveAsVTU( h5data , outputName ):
   i0 = 0
   for i1 in pointers:
     nodeIDs = connectivity[i0:i1]
-        
-    if len(nodeIDs) == 4:
-      tmp = vtk.vtkQuad()
-    elif len(nodeIDs) == 8:
-      tmp = vtk.vtkHexahedron()
+    
+    if nRan == 2:   
+      if len(nodeIDs) == 3:
+        tmp = vtk.vtkTriangle()    
+      elif len(nodeIDs) == 4:
+        tmp = vtk.vtkQuad()
+    elif nRan == 3:
+      if len(nodeIDs) == 4:
+        tmp = vtk.vtkTetra()
+      elif len(nodeIDs) == 6:
+        tmp = vtk.vtkWedge()
+      elif len(nodeIDs) == 8:
+        tmp = vtk.vtkHexahedron()
     else:
       print("Error")
       
@@ -141,6 +153,8 @@ def saveAsVTU( h5data , outputName ):
 
   writer.SetInputData(grid)
   writer.Write()    
+  
+  print("  Cycle %6d written as VTU file. " %cycle )
       
       
       
@@ -151,10 +165,27 @@ def saveAsVTU( h5data , outputName ):
   
 #----- Start
 
-h5file = h5py.File( "pinched8.h5" , 'r' )
+h5file  = h5py.File( "pinched8.h5" , 'r' )
 
-for i,label in enumerate(h5file.keys()):
-  print(i,label)
-  saveAsVTU(h5file[label],str("output"+str(i)+".vtu"))
+nCyc    = h5file.attrs["cycleCount"]
 
+pvdfile = open('pinched8.pvd', 'w')
+
+pvdfile.write("<VTKFile byte_order='LittleEndian' ")
+pvdfile.write("type='Collection' version='0.1'>\n")
+pvdfile.write("  <Collection>\n")
+  
+for i in range(nCyc):
+  iCyc = i+1
+  label = str("cycle"+str(iCyc))
+  name  = str("output"+str(iCyc)+".vtu")
+  
+  data  = h5file[label]
+  saveAsVTU(data,name)
+  
+  pvdfile.write("    <DataSet file='"+name+"' ")
+  pvdfile.write("groups='' part='0' timestep='"+str(iCyc)+"'/>\n")
+
+pvdfile.write("  </Collection>\n")
+pvdfile.write("</VTKFile>\n")
 
