@@ -136,6 +136,16 @@ class NDFFile():
     else:
       grp = self.data['elementGroups']
       return len(grp[elemGroup])
+      
+  def getElemIndex( self , elemID ):
+   
+    '''
+    
+    '''
+    
+    
+    grp = self.data['elements']
+    return list(grp['elementIDs']).index(elemID)      
 
 
   def nodeCount( self , nodeGroup = 'all' ):
@@ -150,6 +160,16 @@ class NDFFile():
     else:
       grp = self.data['nodeGroups']
       return len(grp[nodeGroup])
+      
+  def getNodeIndex( self , nodeID ):
+   
+    '''
+    
+    '''
+    
+    
+    grp = self.data['nodes']
+    return list(grp['nodeIDs']).index(nodeID)
       
   def getNodeGroupNames( self ):
   
@@ -185,7 +205,7 @@ class NDFFile():
   def elemDataSets( self ):
   
     '''
-    Returns the label of element data
+    Returns the labels of element data
     '''
     
     grp = self.data['nodeData']
@@ -395,7 +415,9 @@ print(h5file.getNodeGroupNames())
 
 print(h5file.getNodeGroup('x0'))
 
+print(h5file.getNodeIndex(6))
 
+print(h5file.getNodeIndex(65))
 
 
 
