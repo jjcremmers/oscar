@@ -106,6 +106,23 @@ class NDFFile():
     '''
     
     return len(self.getElemNodes(elemID))
+    
+  def getElemGroupNames( self ):
+  
+    '''
+    
+    '''
+    
+    return list(self.data['elementGroups'].keys())
+    
+  def getElemGroup( self , name ):
+  
+    '''
+    
+    '''
+    
+    grp = self.data['elementGroups']
+    return grp[name][:]
             
   def elemCount( self , elemGroup = "all" ):
   
@@ -117,7 +134,7 @@ class NDFFile():
       grp   = self.data['elements']
       return len(grp['offsets'])
     else:
-      grp = self.data['elemGroups']
+      grp = self.data['elementGroups']
       return len(grp[elemGroup])
 
 
@@ -133,7 +150,24 @@ class NDFFile():
     else:
       grp = self.data['nodeGroups']
       return len(grp[nodeGroup])
+      
+  def getNodeGroupNames( self ):
+  
+    '''
     
+    '''
+    
+    return list(self.data['nodeGroups'].keys())
+    
+  def getNodeGroup( self , name ):
+  
+    '''
+    
+    '''
+    
+    grp = self.data['nodeGroups']
+    return grp[name][:]
+                         
   def rank( self ):
   
     grp = self.data['nodes']
@@ -145,7 +179,7 @@ class NDFFile():
     Returns the labels of element datasets.
     '''
     grp = self.data['nodeData']
-    return grp.keys()
+    return list(grp.keys())
     
     
   def elemDataSets( self ):
@@ -155,7 +189,7 @@ class NDFFile():
     '''
     
     grp = self.data['nodeData']
-    return grp.keys()
+    return list(grp.keys())
       
   def getDisplacements( self , nodeID ):
   
@@ -339,13 +373,13 @@ h5file  = NDFFile( "pinched8.h5" )
 
 h5file.setCycle(7)
 
-print(h5file.getCoords([6,7,18]))
+print("Get coords of nodes 6,7 and 18",h5file.getCoords([6,7,18]))
 
 print(h5file.getElemNodes(7))
 
 print(h5file.getElemNodeCount(7))
 
-print(h5file.elemCount("all"))
+print(h5file.elemCount())
 
 print(h5file.nodeCount())
 
@@ -356,6 +390,11 @@ print(h5file.getDisplacements([0,4,7]))
 print(h5file.getNodeData("S11",[0,4,7]))
 
 print(h5file)
+
+print(h5file.getNodeGroupNames())
+
+print(h5file.getNodeGroup('x0'))
+
 
 
 
