@@ -269,7 +269,7 @@ class NDFFile():
   
       writer.SetDataModeToAscii()
   
-      vtufile = prefix+'_'+str(iCyc)+".vtu"
+      vtufile = prefix+'-'+str(iCyc)+".vtu"
       
       writer.SetFileName(vtufile)
       
