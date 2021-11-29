@@ -7,6 +7,8 @@
 
 import h5py,vtk
 import numpy as np
+
+from VTKutils import insertElement
     
 def versionCheck( f ):
 
@@ -32,7 +34,10 @@ class NDFFile():
     
     if not name.endswith('.h5'):
       name += '.h5'
-           
+      self.prefix = name
+    else:
+      self.prefix = name.split('.')[0]       
+      
     self.f = h5py.File( name, 'r')
     
     if 'cycleCount' in self.f.attrs.keys():  
@@ -45,13 +50,13 @@ class NDFFile():
       print("Error2")
       raise RuntimeError  
       
+    self.cycleCount = self.f.attrs['cycleCount']      
+      
   def __str__( self ):
    
     if 'cycleCount' in self.f.attrs.keys():  
       return "Single file with %d datasets" %self.f.attrs['cycleCount']
-  
-  
-    
+      
   def setCycle( self , iCyc ):
   
     '''
@@ -219,7 +224,7 @@ class NDFFile():
     
     return self.getNodeData( 'displacements' , nodeID )
     
-  def getNodeData( self , label , nodeID ):
+  def getNodeData( self , label , nodeID=-1 ):
   
     '''
     Returns the node data (label) of nodes nodeID (can be a list or an integer).
@@ -228,10 +233,13 @@ class NDFFile():
     grp  = self.data['nodeData']
     dset = grp[label]
     
-    if dset.ndim == 1:
-      return dset[nodeID]
+    if nodeID == -1:
+      return dset
     else:
-      return dset[nodeID,:] 
+      if dset.ndim == 1:
+        return dset[nodeID]
+      else:
+        return dset[nodeID,:] 
       
   def getElemData( self , label , elemID ):
   
@@ -245,16 +253,94 @@ class NDFFile():
     if dset.ndim == 1:
       return dset[elemID]
     else:
-      return dset[elemID,:]      
+      return dset[elemID,:]     
       
+  def saveAsVTU( self , prefix = 'None' ):
+  
+    if prefix == 'None':
+      prefix = self.prefix
       
+    vtufiles = []
       
+    for iCyc in range(self.cycleCount):
+      self.setCycle( iCyc+1 )
+
+      writer = vtk.vtkXMLUnstructuredGridWriter()
+  
+      writer.SetDataModeToAscii()
+  
+      vtufile = prefix+'_'+str(iCyc)+".vtu"
       
+      writer.SetFileName(vtufile)
       
+      vtufiles.append(vtufile)
+  
+      grid = vtk.vtkUnstructuredGrid()
+  
+      # -- Read metadata
+    
+      points = vtk.vtkPoints()
+   
+      coordinates = self.getCoords()
       
+      for crd in coordinates:
+        points.InsertNextPoint(crd)
+
+      grid.SetPoints(points)    
+    
+      #--Store elements-----------------------------
+     
+      for iElm in range(self.elemCount()):        
+        insertElement( grid , self.getElemNodes(iElm) , 3 , 0 )
+              
+      # -- Write nodedata
+  
+      labels = self.nodeDataSets()
       
+      for label in labels:
+        data = self.getNodeData( label )
+     
+        if data.ndim == 2:
+          if label == "displacements":
+            if data.shape[1] == 2:
+              newdata = np.zeros(shape=(nNod,3))
+              newdata[:,:-1] = data
+              data    = newdata
       
-      
+          d = vtk.vtkDoubleArray();
+          d.SetName( label );
+          d.SetNumberOfComponents(data.shape[1]);
+            
+          for i,line in enumerate(data):
+            for j,l in enumerate(line):         
+              d.InsertComponent( i , j , l )
+        else:
+          d = vtk.vtkDoubleArray();
+          d.SetName( label );
+          d.SetNumberOfComponents(1);
+            
+          for i,l in enumerate(data):        
+            d.InsertComponent( i , 0 , l )
+                   
+        grid.GetPointData().AddArray( d )
+
+      writer.SetInputData(grid)
+      writer.Write()                  
+           
+    pvdfile = open('pinched8.pvd', 'w')
+
+    pvdfile.write("<VTKFile byte_order='LittleEndian' ")
+    pvdfile.write("type='Collection' version='0.1'>\n")
+    pvdfile.write("  <Collection>\n")
+  
+    for iCyc,vtufile in enumerate(vtufiles):
+      pvdfile.write("    <DataSet file='"+vtufile+"' ")
+      pvdfile.write("groups='' part='0' timestep='"+str(iCyc)+"'/>\n")
+
+    pvdfile.write("  </Collection>\n")
+    pvdfile.write("</VTKFile>\n")
+    
+'''      
       
       
           
@@ -381,7 +467,7 @@ def saveAsVTU( h5data , outputName ):
   print("  Cycle %6d written as VTU file. " %cycle )
       
       
-      
+'''      
        
 
   
@@ -418,6 +504,8 @@ print(h5file.getNodeGroup('x0'))
 print(h5file.getNodeIndex(6))
 
 print(h5file.getNodeIndex(65))
+
+h5file.saveAsVTU()
 
 
 
