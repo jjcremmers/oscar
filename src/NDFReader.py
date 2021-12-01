@@ -267,7 +267,7 @@ class NDFFile():
 
       writer = vtk.vtkXMLUnstructuredGridWriter()
   
-      writer.SetDataModeToAscii()
+      #writer.SetDataModeToAscii()
   
       vtufile = prefix+'-'+str(iCyc)+".vtu"
       

@@ -1,6 +1,8 @@
 import h5py,vtk
 import numpy as np
     
+
+    
 def versionCheck( f ):
 
   if f.attrs['fileFormat'] != 'RNDF':

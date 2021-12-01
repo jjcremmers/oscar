@@ -44,6 +44,10 @@ def insertElement( grid , elemNodes , rank , family ):
         cell = vtk.vtkTetra()      
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
+      elif nNod == 5:
+        cell = vtk.vtkPyramid()      
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )            
       elif nNod == 6:
         cell = vtk.vtkWedge()      
         setCellNodes( cell , elemNodes )  
@@ -57,7 +61,7 @@ def insertElement( grid , elemNodes , rank , family ):
         setCellNodes( cell , numpy.concatenate(elemNodes[0:8:2],elemNodes[8:16:2] ) ) 
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                         
       else:
-        raise NotImplementedError('Only 4, 6, 8 and 16 node continuum elements in 3D.')             
+        raise NotImplementedError('Only 4, 5, 6, 8 and 16 node continuum elements in 3D.')             
     else:
       raise NotImplementedError('Only 2D and 3D continuum elements.')
   elif family == 1:
