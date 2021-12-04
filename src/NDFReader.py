@@ -253,7 +253,24 @@ class NDFFile():
     if dset.ndim == 1:
       return dset[elemID]
     else:
-      return dset[elemID,:]     
+      return dset[elemID,:]   
+      
+  def particleCount( self , particleGroup = 'all' ):
+  
+    '''
+    Returns the number of nodes in this set
+    '''
+    
+    if particleGroup == 'all':
+      grp = self.data['particles']
+      return grp['position'].shape[0]
+    else:
+      grp = self.data['particleGroups']
+      return len(grp[particleGroup])        
+
+#----------------
+#
+#---------------
       
   def saveAsVTU( self , prefix = 'None' ):
   
@@ -505,7 +522,13 @@ print(h5file.getNodeIndex(6))
 
 print(h5file.getNodeIndex(65))
 
-h5file.saveAsVTU()
+#h5file.saveAsVTU()
+
+h5file  = NDFFile( "silo_test.h5" )
+
+h5file.setCycle(7)
+
+print(h5file.particleCount())
 
 
 
