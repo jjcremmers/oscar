@@ -81,6 +81,22 @@ class NDFFile():
     else:
       return dset[nodeID]
       
+  def getCoords3( self ):
+  
+    '''
+    eee
+    '''
+    
+    grp  = self.data['nodes']
+    dset = grp['coordinates']
+  
+    if dset.shape[1] == 2:
+      data = np.zeros(shape=(dset.shape[0],3))
+      data[:,:2] = dset
+      return data
+    else:
+      return dset[:]
+      
   def getCycle( self ):
     
     '''
@@ -213,7 +229,7 @@ class NDFFile():
     Returns the labels of element data
     '''
     
-    grp = self.data['nodeData']
+    grp = self.data['elementData']
     return list(grp.keys())
       
   def getDisplacements( self , nodeID ):
@@ -241,19 +257,22 @@ class NDFFile():
       else:
         return dset[nodeID,:] 
       
-  def getElemData( self , label , elemID ):
+  def getElemData( self , label , elemID=-1 ):
   
     '''
     Returns the element data (label) of elements elemID (can be a list or an integer).
     '''
     
-    grp  = self.data['elemData']
+    grp  = self.data['elementData']
     dset = grp[label]
     
-    if dset.ndim == 1:
-      return dset[elemID]
+    if elemID == -1:
+      return dset
     else:
-      return dset[elemID,:]   
+      if dset.ndim == 1:
+        return dset[elemID]
+      else:
+        return dset[elemID,:]   
       
   def particleCount( self , particleGroup = 'all' ):
   
@@ -298,7 +317,7 @@ class NDFFile():
     
       points = vtk.vtkPoints()
    
-      coordinates = self.getCoords()
+      coordinates = self.getCoords3()
       
       for crd in coordinates:
         points.InsertNextPoint(crd)
@@ -320,7 +339,7 @@ class NDFFile():
         if data.ndim == 2:
           if label == "displacements":
             if data.shape[1] == 2:
-              newdata = np.zeros(shape=(nNod,3))
+              newdata = np.zeros(shape=(data.shape[0],3))
               newdata[:,:-1] = data
               data    = newdata
       
@@ -340,6 +359,22 @@ class NDFFile():
             d.InsertComponent( i , 0 , l )
                    
         grid.GetPointData().AddArray( d )
+        
+      # -- Write elemdata
+  
+      labels = self.elemDataSets()
+      
+      for label in labels:
+        data = self.getElemData( label )
+             
+        d = vtk.vtkDoubleArray();
+        d.SetName( label );
+        d.SetNumberOfComponents(1);
+            
+        for i,l in enumerate(data):        
+          d.InsertComponent( i , 0 , l )
+                   
+        grid.GetCellData().AddArray( d )        
 
       writer.SetInputData(grid)
       writer.Write()                  
@@ -498,7 +533,7 @@ h5file.setCycle(7)
 
 print("Get coords of nodes 6,7 and 18",h5file.getCoords([6,7,18]))
 
-print(h5file.getElemNodes(7))
+print(h5file.getElemNodes(17))
 
 print(h5file.getElemNodeCount(7))
 
@@ -529,6 +564,19 @@ h5file  = NDFFile( "silo_test.h5" )
 h5file.setCycle(7)
 
 print(h5file.particleCount())
+
+h5file  = NDFFile( "yy.h5" )
+
+h5file.setCycle(1)
+
+print(h5file.nodeDataSets())
+
+print(h5file.elemDataSets())
+
+print(h5file.getElemData("S11",1))
+print(h5file.getNodeData("S11",1))
+
+h5file.saveAsVTU()
 
 
 
