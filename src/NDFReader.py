@@ -491,19 +491,22 @@ class NDFFile():
           datFile.write("\n")
                  
       datFile.write(" }\n</NodeGroup>\n\n") 
-      
-    elemGroups = self.getElemGroupNames()
+    
+    if output == 'dawn':    
+      elemGroups = self.getElemGroupNames()
   
-    for grp in elemGroups:
-      datFile.write("<ElementGroup name = '%s'>\n  {" %grp) 
-      elemIDs = self.getElemGroup( grp )
+      for grp in elemGroups:
+        datFile.write("<ElementGroup name = '%s'>\n  {" %grp) 
+        elemIDs = self.getElemGroup( grp )
       
-      for k,elemID in enumerate(elemIDs):
-        datFile.write(" %d" %elemID) 
-        if (k+1)%10 == 0:
-          datFile.write("\n")
+        for k,elemID in enumerate(elemIDs):
+          datFile.write(" %d" %elemID) 
+          if (k+1)%10 == 0:
+            datFile.write("\n")
         
-      datFile.write(" }\n</ElementGroup>\n\n")       
+        datFile.write(" }\n</ElementGroup>\n\n")       
+        
+    datFile.close()
   
    
 
