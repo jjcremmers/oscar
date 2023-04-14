@@ -325,11 +325,13 @@ class NDFFile():
       self.setCycle( iCyc )
 
       writer = vtk.vtkXMLUnstructuredGridWriter()
-  
+      #writer = vtk.vtkSTLWriter()
+      
       #writer.SetDataModeToAscii()
   
       vtufile = prefix+'-'+str(iCyc)+".vtu"
-      
+      #vtufile = prefix+'-'+str(iCyc)+".stl"
+            
       writer.SetFileName(vtufile)
       
       vtufiles.append(vtufile)
@@ -508,8 +510,118 @@ class NDFFile():
         
     datFile.close()
   
-   
+#----------------
+#
+#---------------
+      
+  def saveModes( self , prefix = 'None' ):
+  
+    '''
+    Saves the data as VTU format
+    '''
+    
+    if prefix == 'None':
+      prefix = self.prefix
+      
+    vtufiles = []
+    
+    if cycles == -1:
+      cycles = np.arange(1,self.cycleCount+1)
+      
+    for iMod in range(5):
 
+      writer = vtk.vtkXMLUnstructuredGridWriter()
+  
+      vtufile = prefix+'-'+str(iMod+1)+".vtu"
+      
+      writer.SetFileName(vtufile)
+      
+      vtufiles.append(vtufile)
+  
+      grid = vtk.vtkUnstructuredGrid()
+  
+      # -- Read metadata
+    
+      points = vtk.vtkPoints()
+   
+      coordinates = self.getCoords3()
+      
+      for crd in coordinates:
+        points.InsertNextPoint(crd)
+
+      grid.SetPoints(points)    
+    
+      #--Store elements-----------------------------
+     
+      for iElm in range(self.elemCount()):        
+        insertElement( grid , self.getElemNodes(iElm) , 3 , 0 )
+              
+      # -- Write nodedata
+      '''
+      labels = self.nodeDataSets()
+      
+      for label in labels:
+        data = self.getNodeData( label )
+     
+        if data.ndim == 2:
+          if label == "displacements":
+            if data.shape[1] == 2:
+              newdata = np.zeros(shape=(data.shape[0],3))
+              newdata[:,:-1] = data
+              data    = newdata
+      
+          d = vtk.vtkDoubleArray();
+          d.SetName( label );
+          d.SetNumberOfComponents(data.shape[1]);
+            
+          for i,line in enumerate(data):
+            for j,l in enumerate(line):         
+              d.InsertComponent( i , j , l )
+        else:
+          d = vtk.vtkDoubleArray();
+          d.SetName( label );
+          d.SetNumberOfComponents(1);
+            
+          for i,l in enumerate(data):        
+            d.InsertComponent( i , 0 , l )
+                   
+        grid.GetPointData().AddArray( d )
+        
+      # -- Write elemdata
+  
+      labels = []#self.elemDataSets()
+      
+      for label in labels:
+        data = self.getElemData( label )
+             
+        d = vtk.vtkDoubleArray();
+        d.SetName( label );
+        d.SetNumberOfComponents(1);
+            
+        for i,l in enumerate(data):        
+          d.InsertComponent( i , 0 , l )
+                   
+        grid.GetCellData().AddArray( d )        
+
+      writer.SetInputData(grid)
+      writer.Write()                  
+      '''
+           
+    pvdfile = open(prefix+".pvd", 'w')
+
+    pvdfile.write("<VTKFile byte_order='LittleEndian' ")
+    pvdfile.write("type='Collection' version='0.1'>\n")
+    pvdfile.write("  <Collection>\n")
+      
+    '''cycles = arange(5):
+    
+    for iCyc,vtufile in zip(cycles,vtufiles):
+      pvdfile.write("    <DataSet file='"+vtufile+"' ")
+      pvdfile.write("groups='' part='0' timestep='"+str(iCyc+1)+"'/>\n")
+
+    pvdfile.write("  </Collection>\n")
+    pvdfile.write("</VTKFile>\n")   
+'''
 '''
               
       # -- Write nodedata
@@ -710,6 +822,7 @@ def saveAsVTU( h5data , outputName ):
   
 #----- Start
 
+'''
 h5file  = NDFFile( "pinched8.h5" )
 
 h5file.setCycle(7)
@@ -740,8 +853,10 @@ print(h5file.getNodeIndex(6))
 
 print(h5file.getNodeIndex(65))
 
-#h5file.saveAsVTU()
+h5file.saveAsVTU()
+'''
 
+'''
 h5file.saveAsDat(cycle=2)
 
 h5file  = NDFFile( "silo_test.h5" )
@@ -763,7 +878,7 @@ print(h5file.getNodeData("S11",1))
 
 #h5file.saveAsVTU()
 
-
+'''
 
 
 

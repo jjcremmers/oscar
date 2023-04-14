@@ -8,7 +8,143 @@
 import h5py,vtk
 import numpy as np
 
-from VTKutils import insertElement
+import vtk
+
+
+def setCellNodes( cell , elemNodes ):
+        
+  for i,inod in enumerate(elemNodes):
+    cell.GetPointIds().SetId(i,inod)
+          
+
+def insertElement( grid , elemNodes , rank , family ):
+
+  '''
+  Inserts an element 
+  '''
+  
+  nNod = len(elemNodes)
+  
+  if family == 0:   # Continuum
+    if rank == 2:
+      if nNod == 3:
+        cell = vtk.vtkTriangle()    
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )     
+      elif nNod == 4:
+        cell = vtk.vtkQuad()      
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )       
+      elif nNod == 6:
+        cell = vtk.vtkTriangle()      
+        setCellNodes( cell , elemNodes[0:6:2] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
+      elif nNod == 8:
+        cell = vtk.vtkQuad()      
+        setCellNodes( cell , elemNodes[0:8:2] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+      elif nNod == 9:
+        cell = vtk.vtkQuad()      
+        setCellNodes( cell , elemNodes[0:8:2] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+      else:
+        raise NotImplementedError('Only 3, 4, 6, 8, 9 node continuum elements in 2D.')     
+    elif rank == 3:
+      if nNod == 4:
+        cell = vtk.vtkTetra()      
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
+      elif nNod == 5:
+        cell = vtk.vtkPyramid()      
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )            
+      elif nNod == 6:
+        cell = vtk.vtkWedge()      
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
+      elif nNod == 8:
+        cell = vtk.vtkHexahedron()
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )               
+      elif nNod == 16:
+        cell = vtk.vtkHexahedron()
+        setCellNodes( cell , numpy.concatenate(elemNodes[0:8:2],elemNodes[8:16:2] ) ) 
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                         
+      else:
+        raise NotImplementedError('Only 4, 5, 6, 8 and 16 node continuum elements in 3D.')             
+    else:
+      raise NotImplementedError('Only 2D and 3D continuum elements.')
+  elif family == 1:
+    if rank == 2:
+      if nNod == 4:
+        cell = vtk.vtkLine() 
+        setCellNodes( cell , elemNodes[0:2] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+        setCellNodes( cell , elemNodes[2:] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                             
+      else:
+        raise NotImplementedError('Only 4 node interface elements in 2D.')           
+    elif rank == 3:
+      if nNod == 6:
+        cell = vtk.vtkTria() 
+        setCellNodes( cell , elemNodes[0:3] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+        setCellNodes( cell , elemNodes[3:] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )              
+      elif nNod == 8:
+        cell = vtk.vtkQuad() 
+        setCellNodes( cell , elemNodes[0:4] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+        setCellNodes( cell , elemNodes[4:] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )        
+      else:
+        raise NotImplementedError('Only 6 and 8 node interface elements in 3D.')        
+    else:
+      raise NotImplementedError('Only 2D and 3D interface elements.')        
+  elif family == 2:
+    if rank == 2:
+      if nNod == 2:
+        cell = vtk.vtkLine() 
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )        
+      else:
+        raise NotImplementedError('Only 2 node surface elements in 2D.')              
+    elif rank == 3:
+      if nNod == 3:
+        cell = vtk.vtkTriangle() 
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )              
+      elif nNod == 4:
+        cell = vtk.vtkQuad() 
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )            
+      else:
+        raise NotImplementedError('Only 3 and 4 node surface elements in 3D.')              
+  elif family == 3:
+    if nNod == 2:
+      cell = vtk.vtkLine() 
+      setCellNodes( cell , elemNodes )  
+      grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )    
+    elif nNod == 3:
+      cell = vtk.vtkLine() 
+      cell.GetPointIds().SetId(0,elemNodes[0])
+      cell.GetPointIds().SetId(1,elemNodes[2])      
+      grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
+    else:
+      raise NotImplementedError('Only 2 and 3 node beam elements.')            
+  elif family == 4:
+    if nNod == 3:
+      cell = vtk.vtkTriangle() 
+      setCellNodes( cell , elemNodes )  
+      grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )        
+    elif nNod == 4:
+      cell = vtk.vtkQuad() 
+      setCellNodes( cell , elemNodes )  
+      grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                     
+  else:
+    raise NotImplementedError('Only 3 and 4 node shell elements.')       
+
+from .VTKutils import insertElement
     
 def versionCheck( f ):
 
@@ -54,7 +190,7 @@ def writePVD( prefix , cycles , vtuFiles ):
 class oscarH5():
 
   '''
-    A class to read and access data in the NDF file format.
+    A class to read and access data in the HDF file format.
   '''  
 
   def __init__( self , fileName ):
@@ -104,10 +240,10 @@ class oscarH5():
   def setCycle( self , iCyc ):
   
     '''
-      Set the cycle for whcih output is read.  
+    Set the cycle for which the output is read.  
     
-      Args:
-        iCyc:   Cycle ID number.  
+    Args:
+      iCyc:   Cycle ID number.  
     '''
     
     self.cycle = iCyc
@@ -122,11 +258,11 @@ class oscarH5():
   def getCoords( self , nodeID = -1 ):
   
     '''
-      Gets the coordinates of node(s) nodeID
+    Gets the coordinates of node(s) nodeID
       
-      Args:
-        nodeID:   nodeID (list or integrer) according to internal numbering
-                  if omitted, all nodes are printed.
+    Args:
+      nodeID:   nodeID (list or integrer) according to internal numbering
+                if omitted, all nodes are printed.
     '''
     
     grp  = self.data['nodes']
@@ -144,7 +280,7 @@ class oscarH5():
   def getCoords3( self ):
   
     '''
-      Returns the coordinates always in a 3D format (even if it is 2D).
+    Returns the coordinates always in a 3D format (even if the rank is equal to 2).
     '''
     
     grp  = self.data['nodes']
@@ -164,7 +300,7 @@ class oscarH5():
   def getCycle( self ):
     
     '''
-      Returns the current cycle ID
+    Returns the current cycle ID
     '''
     
     return self.cycle  
@@ -176,7 +312,11 @@ class oscarH5():
   def getElemNodes( self , elemID ):
   
     '''
-      Returns nodes of element ID
+    Returns nodes of element ID
+    
+    Args:
+    
+      elemID:    elementID number.
     '''
     
     grp   = self.data['elements']
@@ -196,6 +336,10 @@ class oscarH5():
   
     '''
     Returns the number of nodes in this element
+    
+    Args:
+    
+      elemID:    element ID number. This is an integer.
     '''
     
     return len(self.getElemNodes(elemID))
@@ -207,7 +351,7 @@ class oscarH5():
   def getElemGroupNames( self ):
   
     '''
-      Returns all element group names
+    Returns all element group names
     '''
     
     return list(self.data['elementGroups'].keys())
@@ -219,7 +363,11 @@ class oscarH5():
   def getElemGroup( self , name = "all" ):
   
     '''
-      Returns the element ID in a
+    Returns the element IDs in an elementset.
+      
+    Args:
+    
+      name:    Name of the elementset. By defauls all element IDs are given.  
     '''
     
     if name == "all":
@@ -259,7 +407,7 @@ class oscarH5():
       Return element Index
       
       Args:
-        elemID:   integer or list of elemID
+        elemID:   integer or list of elementIDs
     '''
     
     
@@ -273,7 +421,7 @@ class oscarH5():
   def getElemIDs( self ):
    
     '''
-      Return element IDs
+      Return element IDs in the set.
     '''
         
     grp = self.data['elements']
@@ -286,7 +434,12 @@ class oscarH5():
   def nodeCount( self , nodeGroup = 'all' ):
   
     '''
-    Returns the number of nodes in this set
+    Returns the number of nodes in the nodegroup.
+    
+    Args:
+    
+      nodeGroup:    nodeGroup name. By defaults the total number
+                    of nodes is given.
     '''
     
     if nodeGroup == 'all':
@@ -295,6 +448,7 @@ class oscarH5():
     else:
       grp = self.data['nodeGroups']
       return len(grp[nodeGroup])
+      
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
@@ -302,10 +456,13 @@ class oscarH5():
   def getNodeIndex( self , nodeID ):
    
     '''
+    Returns the index of nodeID. This is the index of the node in the input file.
     
+    Args:
+    
+      nodeID:   The nodeID. This can be an integer or a list.
     '''
-    
-    
+        
     grp = self.data['nodes']
     return list(grp['nodeIDs']).index(nodeID)
 
@@ -316,10 +473,10 @@ class oscarH5():
   def getNodeIDs( self ):
    
     '''
-    
+    Returns a list of all the nodeIDs.
     '''
         
-    grp = self.data['nodes']#nodeIDs']
+    grp = self.data['nodes']
     return grp['nodeIDs'][:]
 
 #-------------------------------------------------------------------------------
@@ -329,7 +486,7 @@ class oscarH5():
   def getNodeGroupNames( self ):
   
     '''
-      Returns the names of all NodeGroups in this data set.
+    Returns the names of all NodeGroups in this data set.
     '''
     
     return list(self.data['nodeGroups'].keys())
@@ -341,7 +498,11 @@ class oscarH5():
   def getNodeGroup( self , name ):
   
     '''
+    Returns the nodeID that are present in a certain NodeGroup.
     
+    Args:
+      
+      name:    Name of the nodegroup.       
     '''
     
     grp = self.data['nodeGroups']
@@ -353,6 +514,11 @@ class oscarH5():
                          
   def rank( self ):
   
+    '''
+    Returns the rank of the problem. This is the number of spatial
+      dimensions.
+    '''
+  
     grp = self.data['nodes']
     return grp['coordinates'].shape[1]    
 
@@ -363,8 +529,9 @@ class oscarH5():
   def nodeDataSets( self ):
   
     '''
-    Returns the labels of element datasets.
+    Returns all the labels of node datasets.
     '''
+    
     grp = self.data['nodeData']
     return list(grp.keys())
     
@@ -375,7 +542,7 @@ class oscarH5():
   def elemDataSets( self ):
   
     '''
-    Returns the labels of element data
+    Returns all the labels of element datasets.
     '''
     
     grp = self.data['elementData']
@@ -388,7 +555,12 @@ class oscarH5():
   def getDisplacements( self , nodeID ):
   
     '''
-    Returns the displacements of nodes nodeID (can be a list or an integer.
+    Returns the displacements of nodes
+    
+    Args:
+      
+      nodeID:   node number. This can be an integer or a list. 
+                By default the data of all nodes is given as an array.
     '''       
     
     return self.getNodeData( 'displacements' , nodeID )
@@ -400,12 +572,14 @@ class oscarH5():
   def getNodeData( self , label , nodeID=-1 ):
   
     '''
-      Returns the node data (label) of nodes nodeID (can be a list or an integer).
+    Returns the node data (label) of nodes nodeID (can be a list or an integer).
+      
+    Args:
+      
+      label:    Name of the node dataset.
+      nodeID:   node number. This can be an integer or a list. 
+                By default the data of all nodes is given as an array.
     '''
-
-#-------------------------------------------------------------------------------
-#
-#-------------------------------------------------------------------------------
     
     grp  = self.data['nodeData']
     dset = grp[label]
@@ -441,6 +615,19 @@ class oscarH5():
 
 #-------------------------------------------------------------------------------
 #
+#-------------------------------------------------------------------------------      
+
+  def getMacroFieldData( self , label ):
+  
+    '''
+    Returns the element data (label) of elements elemID (can be a list or an integer).
+    '''
+    
+    grp  = self.data['macrofield']
+    return grp[label][:]
+         
+#-------------------------------------------------------------------------------
+#
 #-------------------------------------------------------------------------------
       
   def particleCount( self , particleGroup = 'all' ):
@@ -467,9 +654,10 @@ class oscarH5():
       
       Args:
       
-        prefix: prefix of the pvd and vtu filenames.
+        prefix: prefix of the pvd and vtu filenames. If omitted the
+                prefix of the original vtu file is used.
         cycle:  a list (or integer) of cycles that need
-                to be written.
+                to be written. If omitted, all files will be exported.
     '''
     
     if prefix == 'None':
