@@ -51,7 +51,7 @@ def getCTE( baseName ):
 #
 #-------------------------------------------
 
-def getMechanical( baseName ):
+def getMechanical( baseName , eps = 0.01 ):
 
   stress = np.zeros(shape=(6,6))  
   E  = []
@@ -67,7 +67,7 @@ def getMechanical( baseName ):
                   
     stress[i,:] = h5file.getMacroFieldData("stresses")
        
-  cmat = stress / 0.01
+  cmat = stress / eps
   smat = np.linalg.inv(cmat)
   
   E.append(1.0/smat[0,0])
