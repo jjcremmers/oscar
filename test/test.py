@@ -1,11 +1,8 @@
-import sys,os
-sys.path.insert(0, os.getcwd()+"/../src/" )
-
-from oscarH5 import oscarH5
+from oscar import oscar
   
 #----- Start
 
-h5file  = oscarH5( "yy.h5" )
+h5file  = oscar( "test.h5" )
 
 h5file.setCycle(1)
 
@@ -14,7 +11,6 @@ print("FFF" , h5file.getElemIndex(1),h5file.getNodeGroupNames())
 
 h5file.saveAsVTU("zz")
 
-'''
 print(h5file.getElemNodes(17))
 
 print(h5file.getElemNodeCount(7))
@@ -60,9 +56,8 @@ print(h5file.elemDataSets())
 print(h5file.getElemData("S11",1))
 print(h5file.getNodeData("S11",1))
 
-#h5file.saveAsVTU()
+h5file.saveAsVTU()
 
-'''
 
 
 
