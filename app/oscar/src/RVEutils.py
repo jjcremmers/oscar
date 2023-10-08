@@ -2,8 +2,18 @@ import numpy as np
 
 from .oscar import oscar
    
+#-------------------------------------------------------------------------------
+#  getFileName
+#-------------------------------------------------------------------------------
+
 def getFileName( name , prefix = None ):
 
+  '''
+  Returns the filename in h5 format
+  
+  Args: name of h5 file (oscar format)
+  '''
+  
   if prefix != None:
     if not name.startswith(prefix):
       output = prefix + "_" + name
@@ -15,12 +25,18 @@ def getFileName( name , prefix = None ):
   
   return output
   
-#
-#
-#    
+#-------------------------------------------------------------------------------
+#  getConductivity
+#-------------------------------------------------------------------------------
       
 def getConductivity( baseName , props = None ):
 
+  '''
+  Returns the themral conductivity
+  
+  Args: name of h5 file (oscar format)
+  '''
+  
   cond = []
     
   for i in range(3):
@@ -28,31 +44,44 @@ def getConductivity( baseName , props = None ):
     fileName = "cond_" + baseName + "_"+str(i)+".h5"    
     
     h5file  = oscar( fileName )  
-    h5file.setCycle(1)
                       
     cond.append(h5file.getMacroFieldData("thermalCond")[0])
     
   return cond
   
-#-----------------------
-#
-#---------------------------------
+#-------------------------------------------------------------------------------
+#  getCTE
+#-------------------------------------------------------------------------------
 
 def getCTE( baseName ):
+
+  '''
+  Returns the coefficients of thermal expansion as an array
+  
+  Args: name of h5 file (oscar format)
+  '''
 
   fileName = "cte_" + baseName +".h5"    
    
   h5file  = oscar( fileName )  
-  h5file.setCycle(1)
                   
-  return h5file.getMacroFieldData("thermalExpansion")
+  return h5file.getMacroFieldData("thermalExpansion").tolist()
   
-#--------------------
-#
-#-------------------------------------------
+#-------------------------------------------------------------------------------
+#  getMechanical
+#-------------------------------------------------------------------------------
 
 def getMechanical( baseName , eps = 0.01 ):
 
+  '''
+  Returns the mechanical properties by collecting all stresses
+  due to a given strain with magnitude eps.
+  
+  Args: baseName name of h5 file (oscar format)
+  
+        eps      strain magnitude
+  '''
+  
   stress = np.zeros(shape=(6,6))  
   E  = []
   G  = []
@@ -63,7 +92,6 @@ def getMechanical( baseName , eps = 0.01 ):
     fileName = "mech_" + baseName + "_" +str(i)+".h5"
   
     h5file  = oscar( fileName )  
-    h5file.setCycle(1)
                   
     stress[i,:] = h5file.getMacroFieldData("stresses")
        
@@ -82,31 +110,41 @@ def getMechanical( baseName , eps = 0.01 ):
   nu.append(-smat[1,2]/smat[1,1])
   nu.append(-smat[0,2]/smat[2,2])
   
-  return E,G,nu
+  return E,G,nu,cmat
 
-#---------------------------------------------------
-#
-#---------------------------------------------------
+#-------------------------------------------------------------------------------
+#  getCapacity
+#-------------------------------------------------------------------------------
   
 def getCapacity( baseName ):
   
+  '''
+  Returns the heat capacity
+  
+  Args: name of h5 file (oscar format)
+  '''
+  
   fileName = "capac_" + baseName + ".h5"
   
   h5file  = oscar( fileName )  
-  h5file.setCycle(1)
                         
   return h5file.getMacroFieldData("specificCapac")[0]  
 
-#------------------------------------------
-#
-#---------------------------------------------------
+#-------------------------------------------------------------------------------
+#  getDensity
+#-------------------------------------------------------------------------------
 
 def getDensity( baseName ):
+  
+  '''
+  Returns the coefficients of thermal expansion as an array
+  
+  Args: name of h5 file (oscar format)
+  '''
   
   fileName = "capac_" + baseName + ".h5"
   
   h5file  = oscar( fileName )  
-  h5file.setCycle(1)
                         
   return h5file.getMacroFieldData("density")[0]
 

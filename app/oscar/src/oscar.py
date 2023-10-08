@@ -101,8 +101,10 @@ class oscar():
     if 'cycleCount' in self.f.attrs.keys():  
       print("Single file with %d datasets (cycles)" %self.f.attrs['cycleCount'] )
       self.cycle = -1
+      self.data = self.f["cycle1"]      
     else:
-      self.data = self.f
+      self.cycle = 1
+      self.data = self.f["cycle1"]
       
     if self.f.attrs['version'] < 1.0:
       print("Error2")
