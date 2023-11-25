@@ -4,14 +4,29 @@ from oscar import oscar
 import argparse
 
 def main():
-    parser = argparse.ArgumentParser(description='A script with one argument')
-    parser.add_argument('arg1', help='First argument')
-
+    
+    parser = argparse.ArgumentParser(description=
+        'h5tovtk: A tool to convert Oscar H5 files to vtk files')
+    
+    parser.add_argument('arg1', 
+                        help='File name')
+                        
+    parser.add_argument('-c', type=int , default=-1, help='Step number')
+                        
+    
+    parser.add_argument("-v", "--verbose", 
+                        help="increase output verbosity",
+                        action="store_true")    
+                        
     args     = parser.parse_args()
     fileName = args.arg1
-
+                 
     h5file  = oscar( fileName )
-    h5file.saveAsVTU()
+        
+    if args.c == -1:
+        h5file.saveAsVTU()
+    else:
+        h5file.saveAsVTU( cycles = [int(args.c)] )
 
 if __name__ == '__main__':
     main()
