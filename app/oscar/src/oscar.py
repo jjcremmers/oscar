@@ -595,7 +595,7 @@ class oscar():
             #--Store elements-----------------------------
      
             for iElm in range(self.elemCount()):        
-                insertElement( grid , self.getElemNodes(iElm) , 3 , 0 )
+                insertElement( grid , self.getElemNodes(iElm) , self.rank() , 0 )
               
             # -- Write nodedata
   
