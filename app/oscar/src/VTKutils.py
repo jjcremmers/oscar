@@ -33,7 +33,11 @@ def insertElement( grid , elemNodes , rank , family ):
   
   if family == 0:   # Continuum
     if rank == 2:
-      if nNod == 3:
+      if nNod == 2:
+        cell = vtk.vtkLine()    
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
+      elif nNod == 3:
         cell = vtk.vtkTriangle()    
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )     
@@ -54,9 +58,18 @@ def insertElement( grid , elemNodes , rank , family ):
         setCellNodes( cell , elemNodes[0:8:2] )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
       else:
-        raise NotImplementedError('Only 3, 4, 6, 8, 9 node continuum elements in 2D.')     
+        print(nNod)
+        raise NotImplementedError('Only 2, 3, 4, 6, 8, 9 node continuum elements in 2D.')     
     elif rank == 3:
-      if nNod == 4:
+      if nNod == 2:
+        cell = vtk.vtkLine()    
+        setCellNodes( cell , elemNodes )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
+      elif nNod == 3:
+        cell = vtk.vtkLine()    
+        setCellNodes( cell , elemNodes[0:3:2] )  
+        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
+      elif nNod == 4:
         cell = vtk.vtkTetra()      
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
@@ -77,7 +90,7 @@ def insertElement( grid , elemNodes , rank , family ):
         setCellNodes( cell , numpy.concatenate(elemNodes[0:8:2],elemNodes[8:16:2] ) ) 
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                         
       else:
-        raise NotImplementedError('Only 4, 5, 6, 8 and 16 node continuum elements in 3D.')             
+        raise NotImplementedError('Only 2, 3, 4, 5, 6, 8 and 16 node continuum elements in 3D.')             
     else:
       raise NotImplementedError('Only 2D and 3D continuum elements.')
   elif family == 1:
