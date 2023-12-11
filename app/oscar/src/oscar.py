@@ -673,8 +673,9 @@ class oscar():
        
         writePVD( prefix , cycles , vtufiles )
 
+        # Copy the vtu- and pvd-files to directory of h5-file
         copyOutput( prefix , cycles , vtufiles , self.fileDir )
-        
+
 #-------------------------------------------------------------------------------
 #  saveAsDat
 #-------------------------------------------------------------------------------
