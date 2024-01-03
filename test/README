@@ -1,0 +1,8 @@
+The following tests are available:
+
+* python testOscar.py
+
+* h5tovtk  macneal_harder2d.h5
+* h5tovtk  phaseField.h5
+* h5tovtk  pinched8.h5
+
