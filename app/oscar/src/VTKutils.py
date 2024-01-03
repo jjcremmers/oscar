@@ -57,7 +57,7 @@ def insertElement( grid , elemNodes , rank , family ):
         cell = vtk.vtkQuad()      
         setCellNodes( cell , elemNodes[0:8:2] )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
-      else:
+      elif nNod > 1:
         print(nNod)
         raise NotImplementedError('Only 2, 3, 4, 6, 8, 9 node continuum elements in 2D.')     
     elif rank == 3:

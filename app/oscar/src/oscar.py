@@ -127,7 +127,8 @@ class oscar():
     
         if 'cycleCount' in self.f.attrs.keys():  
             if self.verbose:
-                print("Single file with %d datasets (cycles)" %self.f.attrs['cycleCount'] )
+                print("Single file with %d datasets (cycles)"
+                       %self.f.attrs['cycleCount'] )
             self.cycle = -1
             self.data = self.f["cycle1"]      
         else:
@@ -625,22 +626,22 @@ class oscar():
   
             labels = self.nodeDataSets()
       
-            for label in labels:
+            for label in labels:            
                 data = self.getNodeData( label )
                 if data.ndim == 2:
-                				if label == "displacements":
-                								if data.shape[1] == 2:
-                												newdata = np.zeros(shape=(data.shape[0],3))
-                												newdata[:,:-1] = data
-                												data = newdata
-                												
-                				d = vtk.vtkDoubleArray();
-                				d.SetName( label );
-                				d.SetNumberOfComponents(data.shape[1]);
+                    if label == "displacements":
+                        if data.shape[1] == 2:
+                            newdata = np.zeros(shape=(data.shape[0],3))
+                            newdata[:,:-1] = data
+                            data = newdata
+             												
+                        d = vtk.vtkDoubleArray();
+                        d.SetName( label );
+                        d.SetNumberOfComponents(data.shape[1]);
                 				
-                				for i,line in enumerate(data):
-                				    for j,l in enumerate(line):
-                				        d.InsertComponent( i , j , l )
+                        for i,line in enumerate(data):
+                            for j,l in enumerate(line):
+                                d.InsertComponent( i , j , l )
                 				        
                 else:
                     d = vtk.vtkDoubleArray();
@@ -674,7 +675,7 @@ class oscar():
         writePVD( prefix , cycles , vtufiles )
 
         # Copy the vtu- and pvd-files to directory of h5-file
-        copyOutput( prefix , cycles , vtufiles , self.fileDir )
+        #copyOutput( prefix , cycles , vtufiles , self.fileDir )
 
 #-------------------------------------------------------------------------------
 #  saveAsDat
