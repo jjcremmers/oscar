@@ -73,30 +73,11 @@ def writePVD( prefix , cycles , vtuFiles ):
     pvdfile.write("  </Collection>\n")
     pvdfile.write("</VTKFile>\n")
 
-#-------------------------------------------------------------------------------
-#
-#-------------------------------------------------------------------------------
-    
-def copyOutput( prefix , cycles , vtuFiles , destDir ):
-        
-    if len(cycles) != len(vtuFiles):
-        print("writePVD: cycles and vtuFiles must have the same length")
-        raise RunTimeError
-
-    for iCyc,vtufile in zip(cycles,vtuFiles):
-        shutil.copy(vtufile, destDir)
-        os.remove(vtufile)
-
-    pvdfile = prefix + ".pvd"
-    shutil.copy(pvdfile , destDir)
-    os.remove(pvdfile)
-
-    print("\nAll vtu-files and pvd-file copied from "+os.getcwd()+" to "+destDir+".\n")
-    print("Files are removed from "+os.getcwd()+".\n")
             
-#-------------------------------------------------------------------------------S
+#-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
+
 
 class oscar():
 
@@ -673,9 +654,6 @@ class oscar():
             writer.Write()                  
        
         writePVD( prefix , cycles , vtufiles )
-
-        # Copy the vtu- and pvd-files to directory of h5-file
-        #copyOutput( prefix , cycles , vtufiles , self.fileDir )
 
 #-------------------------------------------------------------------------------
 #  saveAsDat
