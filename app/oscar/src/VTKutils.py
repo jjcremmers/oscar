@@ -37,6 +37,8 @@ def insertElement( grid , elemNodes , rank , family ):
         cell = vtk.vtkLine()    
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
+      elif nNod == 1:
+        print('pass node element')
       elif nNod == 3:
         cell = vtk.vtkTriangle()    
         setCellNodes( cell , elemNodes )  
