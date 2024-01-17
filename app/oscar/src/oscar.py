@@ -5,7 +5,7 @@
   
 """
 
-import h5py,vtk
+import h5py,vtk,os,shutil
 import numpy as np
 
 import vtk
@@ -72,10 +72,12 @@ def writePVD( prefix , cycles , vtuFiles ):
 
     pvdfile.write("  </Collection>\n")
     pvdfile.write("</VTKFile>\n")
+
             
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
+
 
 class oscar():
 
@@ -95,7 +97,10 @@ class oscar():
         if not fileName.endswith('.h5'):
             fileName += '.h5'
       
-        self.prefix = fileName.split('.')[0]       
+        tempPrefix = fileName.split('.h5')[0]
+        self.prefix = tempPrefix.split('/')[-1]
+
+        self.fileDir = fileName.split(self.prefix)[0]
       
         self.f = h5py.File( fileName, 'r')
     
@@ -103,7 +108,8 @@ class oscar():
     
         if 'cycleCount' in self.f.attrs.keys():  
             if self.verbose:
-                print("Single file with %d datasets (cycles)" %self.f.attrs['cycleCount'] )
+                print("Single file with %d datasets (cycles)"
+                       %self.f.attrs['cycleCount'] )
             self.cycle = -1
             self.data = self.f["cycle1"]      
         else:
@@ -601,32 +607,32 @@ class oscar():
   
             labels = self.nodeDataSets()
       
-            for label in labels:
+            for label in labels:            
                 data = self.getNodeData( label )
-     
-            if data.ndim == 2:
-                if label == "displacements":
-                    if data.shape[1] == 2:
-                        newdata = np.zeros(shape=(data.shape[0],3))
-                        newdata[:,:-1] = data
-                        data    = newdata
-      
-                d = vtk.vtkDoubleArray();
-                d.SetName( label );
-                d.SetNumberOfComponents(data.shape[1]);
-            
-                for i,line in enumerate(data):
-                    for j,l in enumerate(line):         
-                        d.InsertComponent( i , j , l )
-            else:
-                d = vtk.vtkDoubleArray();
-                d.SetName( label );
-                d.SetNumberOfComponents(1);
-            
-                for i,l in enumerate(data):        
-                    d.InsertComponent( i , 0 , l )
-                   
-            grid.GetPointData().AddArray( d )
+                if data.ndim == 2:
+                    if label == "displacements":
+                        if data.shape[1] == 2:
+                            newdata = np.zeros(shape=(data.shape[0],3))
+                            newdata[:,:-1] = data
+                            data = newdata
+             												
+                        d = vtk.vtkDoubleArray();
+                        d.SetName( label );
+                        d.SetNumberOfComponents(data.shape[1]);
+                				
+                        for i,line in enumerate(data):
+                            for j,l in enumerate(line):
+                                d.InsertComponent( i , j , l )
+                				        
+                else:
+                    d = vtk.vtkDoubleArray();
+                    d.SetName( label );
+                    d.SetNumberOfComponents(1);
+                    
+                    for i,l in enumerate(data):
+                        d.InsertComponent( i , 0 , l )
+                        
+                grid.GetPointData().AddArray( d )
         
             # -- Write elemdata
   
@@ -648,7 +654,7 @@ class oscar():
             writer.Write()                  
        
         writePVD( prefix , cycles , vtufiles )
-        
+
 #-------------------------------------------------------------------------------
 #  saveAsDat
 #-------------------------------------------------------------------------------
