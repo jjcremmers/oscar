@@ -23,15 +23,19 @@ def main():
     fileName = args.arg1
     nProc    = 0
         
-    if not fileName.endswith(".h5") and os.path.exists(fileName+"_p0.h5"):  
-        while os.path.exists(fileName+"_p" + str(nProc) + ".h5"):
-            nProc = nProc + 1
-
-        print("Processing ",nProc)      
-
+    if not fileName.endswith(".h5"):
+        if os.path.exists(fileName+"_p0.h5"):  
+            prefix = fileName
+            while os.path.exists(fileName+"_p" + str(nProc) + ".h5"):
+                nProc = nProc + 1
+            print("Processing the files with prefix '%s' for %d processors" 
+                   %(prefix,nProc) )      
+        else:
+            fileName = fileName + ".h5"               
+            print("Processing the file : %s" %fileName)    
+        
     if nProc == 0:  
-    
-        print("Processing ",fileName)                                 
+                             
         h5file = oscar( fileName )
         
         if args.c == -1:
@@ -40,14 +44,14 @@ def main():
             h5file.saveAsVTU( cycles = [int(args.c)] )
     else:
         for iProc in range( nProc ):
-            h5file = oscar( fileName + "_p" + str(iProc) )
+            h5file = oscar( prefix + "_p" + str(iProc) )
             
             if args.c == -1:
                 cycl = h5file.saveAsVTU()
             else:
                 cycl = h5file.saveAsVTU( cycles = [int(args.c)] )     
                 
-        writePVD( fileName , cycl , nProc )
+        writePVD( prefix , cycl , nProc )
                
 
 if __name__ == '__main__':
