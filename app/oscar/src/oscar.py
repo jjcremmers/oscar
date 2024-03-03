@@ -5,10 +5,11 @@
   
 """
 
-import h5py,vtk,os,shutil
-import numpy as np
-
+import h5py
+import os
+import shutil
 import vtk
+import numpy as np
     
 from .VTKutils import insertElement
  
@@ -35,7 +36,21 @@ def versionCheck( f ):
 #-------------------------------------------------------------------------------
 
 def convertToVTU( fileName , cycles = -1 ):
-
+    
+    '''
+    Converts the oscar .h5 file to a vtu file. The VTU file is written to the 
+    drive as fileName.vtu
+    
+    Arguments:
+        fileName     the name of the h5 file (string)
+        cycles       a list of cycles that is converted.
+                     If cycles is equal to -1, all cycles
+                     are converted.
+                     
+    Returns:                     
+        --
+    '''
+    
     oscarFile = oscar( fileName , cycles )
   
     oscarFile.saveAsVTU()
@@ -46,6 +61,20 @@ def convertToVTU( fileName , cycles = -1 ):
 
 def convertToDat( fileName , cycles = -1 ):
 
+    '''
+    Converts the oscar .h5 file to a dawn dat file. The dat file is written 
+    to the drive as fileName.dat
+    
+    Arguments:
+        fileName     the name of the h5 file (string)
+        cycles       a list of cycles that is converted.
+                     If cycles is equal to -1, all cycles
+                     are converted.
+                     
+    Returns:                     
+        --
+    '''
+    
     oscarFile = oscar( fileName , cycles )
   
     oscarFile.saveAsDat()
@@ -54,11 +83,15 @@ def convertToDat( fileName , cycles = -1 ):
 #
 #-------------------------------------------------------------------------------
     
-def writePVD( prefix , cycles , vtuFiles ):
+def writePVD( prefix , cycles , nProc = 1 ):
+      
+    '''
     
-    if len(cycles) != len(vtuFiles):
-        print("writePVD: cycles and vtuFiles must have the same length")
-        raise RunTimeError
+    '''
+    
+    if nProc < 1:
+        print("writePVD: number of processros should by 1 or more.")
+        raise RunTimeError    
     
     pvdfile = open(prefix+".pvd", 'w')
 
@@ -66,13 +99,36 @@ def writePVD( prefix , cycles , vtuFiles ):
     pvdfile.write("type='Collection' version='0.1'>\n")
     pvdfile.write("  <Collection>\n")
       
-    for iCyc,vtufile in zip(cycles,vtuFiles):
-        pvdfile.write("    <DataSet file='"+vtufile+"' ")
-        pvdfile.write("groups='' part='0' timestep='"+str(iCyc)+"'/>\n")
-
+    for iCyc in cycles:
+        if nProc == 1:
+            pvdfile.write("    <DataSet file='"+PVDfileName( prefix , iCyc )+"' ")
+            pvdfile.write("groups='' part='0' timestep='"+str(iCyc)+"'/>\n")
+        else:
+            for iProc in range(nProc):
+                pvdfile.write("    <DataSet file='" + 
+                                PVDfileName( prefix , iCyc , iProc )+"' ")
+                pvdfile.write("groups='' part='0' timestep='"+str(iCyc)+"'/>\n")         
+                     
     pvdfile.write("  </Collection>\n")
     pvdfile.write("</VTKFile>\n")
+    
+    
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
 
+
+def PVDfileName( prefix , iCyc , iProc = -1 ):
+
+    '''
+    
+    '''
+    
+    if iProc == -1:
+        return prefix + "_t" + str(iCyc) + ".vtu"
+    else:
+        return prefix + "_p" + str(iProc) + "_t" + str(iCyc) + ".vtu"     
+            
             
 #-------------------------------------------------------------------------------
 #
@@ -579,7 +635,7 @@ class oscar():
 
             writer = vtk.vtkXMLUnstructuredGridWriter()
   
-            vtufile = prefix+'-'+str(iCyc)+".vtu"
+            vtufile = prefix+'_t'+str(iCyc)+".vtu"
             
             writer.SetFileName(vtufile)
       
@@ -653,7 +709,9 @@ class oscar():
             writer.SetInputData(grid)
             writer.Write()                  
        
-        writePVD( prefix , cycles , vtufiles )
+        writePVD( prefix , cycles )
+        
+        return cycles
 
 #-------------------------------------------------------------------------------
 #  saveAsDat

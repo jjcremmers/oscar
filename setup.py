@@ -5,7 +5,7 @@ with open("README.md","r") as f:
     
 setup(
     name="oscar",
-    version="1.0.1",
+    version="1.1.0",
     description="A collection of classes and functions to read Finite Element Hdf5 files.",
     package_dir={"": "app"},
     packages=find_packages(where="app"),
