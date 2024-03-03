@@ -5,4 +5,5 @@ The following tests are available:
 * h5tovtk  macneal_harder2d.h5
 * h5tovtk  phaseField.h5
 * h5tovtk  pinched8.h5
+* h5tovtk  raasch8_16x128
 
