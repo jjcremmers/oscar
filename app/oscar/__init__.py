@@ -1,5 +1,6 @@
 from .src.oscar import (
     oscar            ,
+    writePVD         ,
     convertToVTU     ,
     convertToDat     ,
 )
