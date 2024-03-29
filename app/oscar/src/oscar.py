@@ -35,7 +35,7 @@ def versionCheck( f ):
 #  convertToVTU
 #-------------------------------------------------------------------------------
 
-def convertToVTU( fileName , cycles = -1 ):
+def convertToVTU( fileName , cycles = -1 , eg = 'all' ):
     
     '''
     Converts the oscar .h5 file to a vtu file. The VTU file is written to the 
@@ -46,12 +46,14 @@ def convertToVTU( fileName , cycles = -1 ):
         cycles       a list of cycles that is converted.
                      If cycles is equal to -1, all cycles
                      are converted.
+        eg           a list of elementgroups that is converted.
+                     If eg = 'all' (default), all elementgroups are printed
                      
     Returns:                     
         --
     '''
     
-    oscarFile = oscar( fileName , cycles )
+    oscarFile = oscar( fileName , cycles , eg )
   
     oscarFile.saveAsVTU()
   
@@ -141,13 +143,14 @@ class oscar():
       A class to read and access data in the HDF file format.
     '''  
 
-    def __init__( self , fileName , verbose = False ):
+    def __init__( self , fileName , eg , verbose = False ):
 
         '''
           Inits the class oscar
            
             Args: 
             name:   filename. May be with or without the extension .h5
+            elementGroups: elementGroups to be printed.
         '''
     
         if not fileName.endswith('.h5'):
@@ -176,7 +179,20 @@ class oscar():
             print("Error2")
             raise RuntimeError  
       
-        self.cycleCount = self.f.attrs['cycleCount']      
+        self.cycleCount = self.f.attrs['cycleCount']   
+
+        # Read elementGroups from input-argument
+        tempEG = eg
+        separators = ['[',']','{','}']
+        for sep in separators:
+            if sep in tempEG:
+
+                tempEG = tempEG.replace(sep,"")
+
+        tempEG2 = tempEG.split(",")            
+        self.elementGroups = tempEG2
+
+        self.checkElementGroups()
 
 #-------------------------------------------------------------------------------
 #
@@ -214,6 +230,35 @@ class oscar():
         if self.verbose:
             print("opened cycle %d." %self.cycle)
     
+#-------------------------------------------------------------------------------
+#  checkElementGroups
+#-------------------------------------------------------------------------------
+    
+    def checkElementGroups( self ):
+
+        '''
+          Checks if elementGroups given as input-argument are available in
+          the h5-file
+        '''
+
+        availableNames = self.getElemGroupNames()
+        if not self.elementGroups[0]=='all':            
+            for iEG in self.elementGroups:
+                if not (iEG in availableNames):
+                    print("\n=======================================================================\n")
+                    print("Chosen element-group >>> ",iEG," <<< not found in h5-file.\n")
+                    print("Available groups are: ",availableNames,"\n")
+                    print("=========================================================================\n")
+                    raise RuntimeError            
+            print("\n=======================================================================\n")
+            print("Available element-groups are: ",availableNames,"\n")
+            print("Following element-groups are printed: ",self.elementGroups,"\n")
+            print("=========================================================================\n")
+        else:
+            print("\n=======================================================================\n")
+            print("All element-groups are printed: ",availableNames,"\n")
+            print("=========================================================================\n")
+
 #-------------------------------------------------------------------------------
 #  getCoords
 #-------------------------------------------------------------------------------
@@ -656,13 +701,19 @@ class oscar():
     
             #--Store elements-----------------------------
      
-            for iElm in range(self.elemCount()):        
-                insertElement( grid , self.getElemNodes(iElm) , self.rank() , 0 )
+            if self.elementGroups=="all":
+                for iElm in range(self.elemCount()):        
+                    insertElement( grid , self.getElemNodes(iElm) , self.rank() , 0 )
+            else:
+                for grp in self.elementGroups:
+                    elemIDs = self.getElemGroup( grp )      
+                    for elemID in elemIDs:
+                        insertElement( grid , self.getElemNodes(elemID) , self.rank() , 0 )
               
             # -- Write nodedata
   
             labels = self.nodeDataSets()
-      
+
             for label in labels:            
                 data = self.getNodeData( label )
                 if data.ndim == 2:
@@ -692,9 +743,10 @@ class oscar():
         
             # -- Write elemdata
   
-            labels = []#self.elemDataSets()
-      
+            labels = self.elemDataSets()
+
             for label in labels:
+
                 data = self.getElemData( label )
              
                 d = vtk.vtkDoubleArray();
@@ -806,6 +858,7 @@ class oscar():
             elemGroups = self.getElemGroupNames()
   
             for grp in elemGroups:
+                print("elementGroup = ",grp)
                 datFile.write("<ElementGroup name = '%s'>\n  {" %grp) 
                 elemIDs = self.getElemGroup( grp )
       

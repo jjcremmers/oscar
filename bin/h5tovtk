@@ -13,14 +13,18 @@ def main():
                         help='File name')
                         
     parser.add_argument('-c', type=int , default=-1, help='Step number')
-                        
     
     parser.add_argument("-v", "--verbose", 
                         help="increase output verbosity",
                         action="store_true")    
+
+    parser.add_argument('-eg', 
+                        help="Define element-groups to print (separate by comma)",
+                        default="all")
                         
     args     = parser.parse_args()
     fileName = args.arg1
+    elementGroups = args.eg
     nProc    = 0
         
     if not fileName.endswith(".h5"):
@@ -33,18 +37,17 @@ def main():
         else:
             fileName = fileName + ".h5"               
             print("Processing the file : %s" %fileName)    
-        
+       
     if nProc == 0:  
-                             
-        h5file = oscar( fileName )
+        h5file = oscar( fileName , elementGroups )
         
         if args.c == -1:
-            h5file.saveAsVTU()
+            h5file.saveAsVTU( )
         else:
             h5file.saveAsVTU( cycles = [int(args.c)] )
     else:
         for iProc in range( nProc ):
-            h5file = oscar( prefix + "_p" + str(iProc) )
+            h5file = oscar( prefix + "_p" + str(iProc) , elementGroups )
             
             if args.c == -1:
                 cycl = h5file.saveAsVTU()
