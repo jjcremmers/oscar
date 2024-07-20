@@ -12,6 +12,17 @@ import vtk
 import numpy as np
     
 from .VTKutils import insertElement
+
+def apply_rainbow_color_map(mapper):
+
+    rng = mapper.GetScalarRange()
+
+    lookup_table = vtk.vtkLookupTable()
+    lookup_table.SetNumberOfTableValues(256)
+    lookup_table.Build()
+    lookup_table.SetTableRange(rng[0],rng[1])  # Set the range of data values
+    lookup_table.SetHueRange(0.0, 0.8)  # Map color hue from blue to red
+    mapper.SetLookupTable(lookup_table)
  
 #-------------------------------------------------------------------------------
 #
@@ -707,7 +718,97 @@ class oscar():
                 grid.GetCellData().AddArray( d )        
 
             writer.SetInputData(grid)
-            writer.Write()                  
+            writer.Write()    
+            
+            
+            if iCyc == 11:
+            
+                # Step 2: Set up a renderer and render window
+                stress_array = grid.GetPointData().GetArray("S22")
+                grid.GetPointData().SetScalars(stress_array)
+
+                # Create a mapper for the mesh
+                mapper = vtk.vtkDataSetMapper()
+                mapper.SetInputData(grid)
+                mapper.SetScalarRange(stress_array.GetRange())  # Set the color range based on the stress data
+                #mapper.SetScalarRange(0,100000000)
+	
+                # Apply a color map (for example, Jet)
+                apply_rainbow_color_map(mapper)
+
+                # Create an actor for the mesh
+                actor = vtk.vtkActor()
+                actor.SetMapper(mapper)
+
+                # Create a scalar bar actor for the legend
+                scalar_bar = vtk.vtkScalarBarActor()
+                scalar_bar.SetLookupTable(mapper.GetLookupTable())
+                scalar_bar.SetTitle("Stress")
+                scalar_bar.SetNumberOfLabels(4)  # Number of labels on the scalar bar
+
+                grid.GetPointData().SetVectors(grid.GetPointData().GetArray("displacements"))
+                
+                warp_vector = vtk.vtkWarpVector()
+                warp_vector.SetInputData(grid)
+                warp_vector.SetScaleFactor(1.0)  # Apply magnification factor
+
+                # Update the warp vector filter
+                warp_vector.Update()
+
+                mapper = vtk.vtkDataSetMapper()
+                #mapper.SetInputData(grid)
+                mapper.SetInputConnection(warp_vector.GetOutputPort())
+
+                actor = vtk.vtkActor()
+                actor.SetMapper(mapper)
+                
+                
+                renderer = vtk.vtkRenderer()
+                renderer.AddActor(actor)
+                renderer.AddActor(scalar_bar)  # Add the scalar bar to the renderer                
+                renderer.SetBackground(1, 1, 1)  # Set background to white
+
+                render_window = vtk.vtkRenderWindow()
+                render_window.AddRenderer(renderer)
+                render_window.SetSize(800, 800)  # Set the size of the render window
+                '''
+                camera = vtk.vtkCamera()
+                camera.SetPosition(5, 5, 5)  # Set the desired camera position
+                camera.SetFocalPoint(0, 0, 0)  # Set the desired focal point
+                camera.SetViewUp(0, 1, 0)  # Set the desired view up vector
+                renderer.SetActiveCamera(camera)
+                renderer.ResetCameraClippingRange()
+                
+                renderer.ResetCamera()
+                renderer.GetActiveCamera().Zoom(1.5)
+                
+                camera = renderer.GetActiveCamera()
+                camera.Azimuth(45)  # Rotate the camera around the vertical axis
+                camera.Elevation(30)  # Rotate the camera around the horizontal axis
+                camera.Zoom(1.5)  # Optional: zoom in a bit to make the mesh more prominent
+                '''
+                
+                renderer.ResetCamera()
+                
+                camera = renderer.GetActiveCamera()
+                camera.Azimuth(245)  # Rotate the camera around the vertical axis
+                camera.Elevation(30)                
+                camera.Zoom(0.5)
+                
+                
+                                
+                window_to_image_filter = vtk.vtkWindowToImageFilter()
+                window_to_image_filter.SetInput(render_window)
+                window_to_image_filter.Update()
+                
+                # Step 6: Save the image as a PNG file
+                writer2 = vtk.vtkPNGWriter()
+                writer2.SetFileName("output_image.png")
+                writer2.SetInputData(window_to_image_filter.GetOutput())
+                writer2.Write()
+
+
+                          
        
         writePVD( prefix , cycles )
         
@@ -872,3 +973,6 @@ class oscar():
         pvdfile.write("<VTKFile byte_order='LittleEndian' ")
         pvdfile.write("type='Collection' version='0.1'>\n")
         pvdfile.write("  <Collection>\n")
+        
+        
+        
