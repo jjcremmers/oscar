@@ -12,10 +12,14 @@ class OscarTesting(unittest.TestCase):
 	
     h5file = oscar( "pinched8.h5" )
     h5file.setCycle(9)          
+    
+    h5fred = oscar( "pinched8_reduced.h5" )
+    h5fred.setCycle(9)      
         
     def test_getCoords(self):
       
         self.assertEqual( len(self.h5file.getCoords()) , 578 )
+        self.assertEqual( len(self.h5fred.getCoords()) , 578 )        
 
     def test_getCoordsComponents(self):
 
