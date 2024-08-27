@@ -12,6 +12,17 @@ import vtk
 import numpy as np
     
 from .VTKutils import insertElement
+
+def apply_rainbow_color_map(mapper):
+
+    rng = mapper.GetScalarRange()
+
+    lookup_table = vtk.vtkLookupTable()
+    lookup_table.SetNumberOfTableValues(256)
+    lookup_table.Build()
+    lookup_table.SetTableRange(rng[0],rng[1])  # Set the range of data values
+    lookup_table.SetHueRange(0.0, 0.8)  # Map color hue from blue to red
+    mapper.SetLookupTable(lookup_table)
  
 #-------------------------------------------------------------------------------
 #
@@ -176,7 +187,14 @@ class oscar():
             print("Error2")
             raise RuntimeError  
       
-        self.cycleCount = self.f.attrs['cycleCount']      
+        self.cycleCount = self.f.attrs['cycleCount']   
+        
+        if 'elements' in self.f.keys():
+            self.connectivity = self.f['elements']['connectivity']
+            self.offsets      = self.f['elements']['offsets'] 
+            
+        if 'nodes' in self.f.keys():
+            self.coordinates  = self.f['nodes']['coordinates']                  
 
 #-------------------------------------------------------------------------------
 #
@@ -210,6 +228,9 @@ class oscar():
         if 'elements' in self.data.keys():
             self.connectivity = self.data['elements']['connectivity']
             self.offsets      = self.data['elements']['offsets']
+            
+        if 'nodes' in self.data.keys():
+            self.coordinates  = self.data['nodes']['coordinates']                  
 
         if self.verbose:
             print("opened cycle %d." %self.cycle)
@@ -227,14 +248,11 @@ class oscar():
             nodeID:   nodeID (list or integrer) according to internal numbering
                       if omitted, all nodes are printed.
         '''
-    
-        grp  = self.data['nodes']
-        dset = grp['coordinates']
-  
+      
         if nodeID == -1:
-            return dset[:]
+            return self.coordinates[:]
         else:
-            return dset[nodeID]
+            return self.coordinates[nodeID]
 
 #-------------------------------------------------------------------------------
 #  getCoords3
@@ -245,15 +263,13 @@ class oscar():
       '''
       Returns the coordinates always in a 3D format (even if the rank is equal to 2).
       '''
-      
-      dset = self.data['nodes']['coordinates']
-        
-      if dset.shape[1] == 2:
+              
+      if self.coordinates.shape[1] == 2:
           data = np.zeros(shape=(dset.shape[0],3))
-          data[:,:2] = dset
+          data[:,:2] = self.coordinates
           return data
       else:
-          return dset[:]
+          return self.coordinates[:]
 
 #-------------------------------------------------------------------------------
 #  getCycle
@@ -322,8 +338,13 @@ class oscar():
         '''
         Returns all element group names
         '''
-    
-        return list(self.data['elementGroups'].keys())
+        
+        if 'elementGroups' in self.data.keys():    
+            return list(self.data['elementGroups'].keys())
+        elif 'elementGroups' in self.f.keys():
+            return list(self.f['elementGroups'].keys())
+        else:
+            return []
 
 #-------------------------------------------------------------------------------
 #  getElemGroup
@@ -341,8 +362,10 @@ class oscar():
     
         if name == "all":
             return list(range(self.elemCount("all")))
-        else:
+        elif 'elementGroups' in self.data.keys(): 
             return self.data['elementGroups'][name][:]
+        else:
+            return self.f['elementGroups'][name][:]        
 
 #-------------------------------------------------------------------------------
 #  elemCount
@@ -359,11 +382,9 @@ class oscar():
         '''
     
         if elemGroup == 'all':
-            grp   = self.data['elements']
-            return len(grp['offsets'])
+            return len(self.offsets)
         else:
-            grp = self.data['elementGroups']
-            return len(grp[elemGroup])
+            return len(self.getElemGroup(elemGroup))
 
 #-------------------------------------------------------------------------------
 #
@@ -378,8 +399,11 @@ class oscar():
             elemID:   integer or list of elementIDs
         '''
     
-    
-        grp = self.data['elements']
+        if 'elements' in self.f.keys():    
+            grp = self.f['elements']
+        else:
+            grp = self.data['elements']
+            
         return list(grp['elementIDs']).index(elemID)      
 
 #-------------------------------------------------------------------------------
@@ -391,8 +415,12 @@ class oscar():
         '''
           Return element IDs in the set.
         '''
-        
-        grp = self.data['elements']
+ 
+        if 'elements' in self.f.keys():        
+            grp = self.f['elements']
+        else:
+            grp = self.data['elements']
+                        
         return grp['elementIDs'][:]
 
 #-------------------------------------------------------------------------------
@@ -411,10 +439,13 @@ class oscar():
         '''
     
         if nodeGroup == 'all':
-            grp = self.data['nodes']
-            return grp['coordinates'].shape[0]
+            return self.coordinates.shape[0]
         else:
-            grp = self.data['nodeGroups']
+            if 'nodes' in self.f.keys():        
+                grp = self.f['nodeGroups']
+            else:
+                grp = self.data['nodeGroups']
+            
             return len(grp[nodeGroup])
       
 #-------------------------------------------------------------------------------
@@ -430,8 +461,12 @@ class oscar():
     
             nodeID:   The nodeID. This can be an integer or a list.
         '''
-        
-        grp = self.data['nodes']
+
+        if 'nodes' in self.f.keys():                           
+            grp = self.f['nodes']
+        else:
+            grp = self.data['nodes'] 
+                                   
         return list(grp['nodeIDs']).index(nodeID)
 
 #-------------------------------------------------------------------------------
@@ -443,8 +478,12 @@ class oscar():
         '''
         Returns a list of all the nodeIDs.
         '''
-        
-        grp = self.data['nodes']
+
+        if 'nodes' in self.f.keys():                           
+            grp = self.f['nodes']                
+        else:
+            grp = self.data['nodes']
+            
         return grp['nodeIDs'][:]
 
 #-------------------------------------------------------------------------------
@@ -457,7 +496,10 @@ class oscar():
         Returns the names of all NodeGroups in this data set.
         '''
     
-        return list(self.data['nodeGroups'].keys())
+        if 'nodes' in self.f.keys():                           
+            return list(self.f['nodeGroups'].keys())
+        else:
+            return list(self.data['nodeGroups'].keys())
 
 #-------------------------------------------------------------------------------
 #
@@ -472,8 +514,12 @@ class oscar():
       
             name:    Name of the nodegroup.       
         '''
-    
-        grp = self.data['nodeGroups']
+
+        if 'nodes' in self.f.keys():                               
+            grp = self.f['nodeGroups']        
+        else:
+            grp = self.data['nodeGroups']
+            
         return grp[name][:]
 
 #-------------------------------------------------------------------------------
@@ -487,8 +533,7 @@ class oscar():
             dimensions.
         '''
   
-        grp = self.data['nodes']
-        return grp['coordinates'].shape[1]    
+        return self.coordinates.shape[1]    
 
 #-------------------------------------------------------------------------------
 #
@@ -570,7 +615,8 @@ class oscar():
     def getElemData( self , label , elemID=-1 ):
   
         '''
-        Returns the element data (label) of elements elemID (can be a list or an integer).
+        Returns the element data (label) of elements elemID 
+                (can be a list or an integer).
         '''
     
         grp  = self.data['elementData']
@@ -591,7 +637,8 @@ class oscar():
     def getMacroFieldData( self , label ):
   
         '''
-        Returns the element data (label) of elements elemID (can be a list or an integer).
+        Returns the element data (label) of elements 
+            elemID (can be a list or an integer).
         '''
     
         grp  = self.data['macrofield']
@@ -718,8 +765,81 @@ class oscar():
                 grid.GetCellData().AddArray( d )        
 
             writer.SetInputData(grid)
-            writer.Write()                  
-       
+            writer.Write()    
+            
+            '''
+            if iCyc == 11:
+            
+                # Step 2: Set up a renderer and render window
+                stress_array = grid.GetPointData().GetArray("S22")
+                grid.GetPointData().SetScalars(stress_array)
+
+                # Create a mapper for the mesh
+                mapper = vtk.vtkDataSetMapper()
+                mapper.SetInputData(grid)
+                mapper.SetScalarRange(stress_array.GetRange())  # Set the color range based on the stress data
+                #mapper.SetScalarRange(0,100000000)
+	
+                # Apply a color map (for example, Jet)
+                apply_rainbow_color_map(mapper)
+
+                # Create an actor for the mesh
+                actor = vtk.vtkActor()
+                actor.SetMapper(mapper)
+
+                # Create a scalar bar actor for the legend
+                scalar_bar = vtk.vtkScalarBarActor()
+                scalar_bar.SetLookupTable(mapper.GetLookupTable())
+                scalar_bar.SetTitle("Stress")
+                scalar_bar.SetNumberOfLabels(4)  # Number of labels on the scalar bar
+
+                grid.GetPointData().SetVectors(grid.GetPointData().GetArray("displacements"))
+                
+                warp_vector = vtk.vtkWarpVector()
+                warp_vector.SetInputData(grid)
+                warp_vector.SetScaleFactor(1.0)  # Apply magnification factor
+
+                # Update the warp vector filter
+                warp_vector.Update()
+
+                mapper = vtk.vtkDataSetMapper()
+                #mapper.SetInputData(grid)
+                mapper.SetInputConnection(warp_vector.GetOutputPort())
+
+                actor = vtk.vtkActor()
+                actor.SetMapper(mapper)
+                
+                
+                renderer = vtk.vtkRenderer()
+                renderer.AddActor(actor)
+                renderer.AddActor(scalar_bar)  # Add the scalar bar to the renderer                
+                renderer.SetBackground(1, 1, 1)  # Set background to white
+
+                render_window = vtk.vtkRenderWindow()
+                render_window.AddRenderer(renderer)
+                render_window.SetSize(800, 800)  # Set the size of the render window
+
+                
+                renderer.ResetCamera()
+                
+                camera = renderer.GetActiveCamera()
+                camera.Azimuth(245)  # Rotate the camera around the vertical axis
+                camera.Elevation(30)                
+                camera.Zoom(0.5)
+                
+                
+                                
+                window_to_image_filter = vtk.vtkWindowToImageFilter()
+                window_to_image_filter.SetInput(render_window)
+                window_to_image_filter.Update()
+                
+                # Step 6: Save the image as a PNG file
+                writer2 = vtk.vtkPNGWriter()
+                writer2.SetFileName("output_image.png")
+                writer2.SetInputData(window_to_image_filter.GetOutput())
+                writer2.Write()
+                '''
+                                 
         writePVD( prefix , cycles )
         
         return cycles
@@ -883,3 +1003,6 @@ class oscar():
         pvdfile.write("<VTKFile byte_order='LittleEndian' ")
         pvdfile.write("type='Collection' version='0.1'>\n")
         pvdfile.write("  <Collection>\n")
+        
+        
+        
