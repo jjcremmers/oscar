@@ -451,17 +451,13 @@ class oscar():
 
     def unpackElements( self , a , offsets ):
              
-        elemNodes = []
+        elemNodes = [None] * len(offsets)
         
-        elemNodes.append(a[0:offsets[0]])
-        
-        for i in range(len(offsets)-1):
-            elemNodes.append(a[offsets[i]:offsets[i+1]])
+        elemNodes[0] = a[0:offsets[0]]
 
-                            
-        #elemNodes = [a[offsets[i]:offsets[i+1]] for i in range(len(offsets) - 1)]
-        #elemNodes.append(a[offsets[-1]:])  # Add the final segment   
-          
+        for i, (start, end) in enumerate(zip(offsets[:-1], offsets[1:]), 1):
+            elemNodes[i] = a[start:end]
+            
         return elemNodes
       
 #-------------------------------------------------------------------------------
