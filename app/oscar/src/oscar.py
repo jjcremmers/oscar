@@ -190,8 +190,10 @@ class oscar():
         self.cycleCount = self.f.attrs['cycleCount']   
         
         if 'elements' in self.f.keys():
-            self.connectivity = self.f['elements']['connectivity']
-            self.offsets      = self.f['elements']['offsets'] 
+            connectivity = self.f['elements']['connectivity'][:]
+            offsets      = self.f['elements']['offsets'][:]
+                    
+            self.elemNodes = self.unpackElements( connectivity , offsets )
             
         if 'nodes' in self.f.keys():
             self.coordinates  = self.f['nodes']['coordinates']                  
@@ -226,9 +228,11 @@ class oscar():
         self.data = self.f["cycle"+str(self.cycle)]
         
         if 'elements' in self.data.keys():
-            self.connectivity = self.data['elements']['connectivity']
-            self.offsets      = self.data['elements']['offsets']
+            connectivity = self.data['elements']['connectivity'][:]
+            offsets      = self.data['elements']['offsets'][:]
             
+            self.elemNodes = self.unpackElements( connectivity , offsets )            
+                        
         if 'nodes' in self.data.keys():
             self.coordinates  = self.data['nodes']['coordinates']                  
 
@@ -307,11 +311,15 @@ class oscar():
     
             elemID:    elementID number.
         '''
-  
+   
+        '''
         if elemID == 0:
             return self.connectivity[0:self.offsets[elemID]]
         else:
             return self.connectivity[self.offsets[elemID-1]:self.offsets[elemID]]  
+        '''
+        
+        return self.elemNodes[elemID]            
 
 #-------------------------------------------------------------------------------
 #  getElemNodeCount
@@ -327,7 +335,7 @@ class oscar():
             elemID:    element ID number. This is an integer.
         '''
     
-        return len(self.getElemNodes(elemID))
+        return len(self.elemNodes[elemID])
 
 #-------------------------------------------------------------------------------
 #  getElemGroupNames
@@ -382,7 +390,7 @@ class oscar():
         '''
     
         if elemGroup == 'all':
-            return len(self.offsets)
+            return len(self.elemNodes)
         else:
             return len(self.getElemGroup(elemGroup))
 
@@ -447,6 +455,21 @@ class oscar():
                 grp = self.data['nodeGroups']
             
             return len(grp[nodeGroup])
+            
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+    def unpackElements( self , a , offsets ):
+             
+        elemNodes = [None] * len(offsets)
+        
+        elemNodes[0] = a[0:offsets[0]]
+
+        for i, (start, end) in enumerate(zip(offsets[:-1], offsets[1:]), 1):
+            elemNodes[i] = a[start:end]
+            
+        return elemNodes
       
 #-------------------------------------------------------------------------------
 #
@@ -714,8 +737,8 @@ class oscar():
     
             #--Store elements-----------------------------
      
-            for iElm in range(self.elemCount()):        
-                insertElement( grid , self.getElemNodes(iElm) , self.rank() , 0 )
+            for elemNodes in self.elemNodes:  
+                insertElement( grid , elemNodes , self.rank() , 0 )
               
             # -- Write nodedata
   
