@@ -269,7 +269,7 @@ class oscar():
       '''
               
       if self.coordinates.shape[1] == 2:
-          data = np.zeros(shape=(dset.shape[0],3))
+          data = np.zeros(shape=(self.coordinates.shape[0],3))
           data[:,:2] = self.coordinates
           return data
       else:

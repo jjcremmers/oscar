@@ -33,13 +33,7 @@ def insertElement( grid , elemNodes , rank , family , strict = False ):
   
   if family == 0:   # Continuum
     if rank == 2:
-      if nNod == 2:
-        cell = vtk.vtkLine()    
-        setCellNodes( cell , elemNodes )  
-        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
-      elif nNod == 1:
-        print('pass node element')
-      elif nNod == 3:
+      if nNod == 3:
         cell = vtk.vtkTriangle()    
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )     
@@ -61,18 +55,8 @@ def insertElement( grid , elemNodes , rank , family , strict = False ):
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )
       elif strict:
         raise NotImplementedError('Only 3, 4, 6, 8, 9 node continuum elements in 2D.')     
-    elif rank == 3:
-      if nNod == 2:
-        cell = vtk.vtkLine()    
-        setCellNodes( cell , elemNodes )  
-        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() ) 
-      elif nNod == 1:
-        print('pass node element')
-      elif nNod == 3:
-        cell = vtk.vtkLine()    
-        setCellNodes( cell , elemNodes[0:3:2] )  
-        grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
-      elif nNod == 4:
+    elif rank == 3:  
+      if nNod == 4:
         cell = vtk.vtkTetra()      
         setCellNodes( cell , elemNodes )  
         grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )             
