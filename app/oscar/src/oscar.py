@@ -129,7 +129,7 @@ def writePVD( prefix , cycles , nProc = 1 ):
 #-------------------------------------------------------------------------------
 
 
-def PVDfileName( prefix , iCyc , iProc = -1 ):
+def PVDfileName( prefix : str , iCyc :int , iProc : int = -1 ) -> str:
 
     '''
     
@@ -150,17 +150,20 @@ class oscar():
 
     '''
       A class to read and access data in the HDF file format.
-    '''  
-
-    def __init__( self , fileName , verbose = False ):
-
-        '''
+      
           Inits the class oscar
            
             Args: 
             name:   filename. May be with or without the extension .h5
+            
+    '''  
+
+    def __init__( self , fileName : str , verbose : bool = False ):
+
         '''
-    
+        Constructor
+        '''
+            
         if not fileName.endswith('.h5'):
             fileName += '.h5'
       
@@ -202,7 +205,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def __str__( self ):
+    def __str__( self ) -> str:
   
         '''
          Prints the main contents of the file
@@ -215,7 +218,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def setCycle( self , iCyc ):
+    def setCycle( self , iCyc : int ):
   
         '''
          Set the cycle for which the output is read.  
@@ -243,7 +246,7 @@ class oscar():
 #  getCoords
 #-------------------------------------------------------------------------------
     
-    def getCoords( self , nodeID = -1 ):
+    def getCoords( self , nodeID : int = -1 ):
   
         '''
           Gets the coordinates of node(s) nodeID
@@ -279,7 +282,7 @@ class oscar():
 #  getCycle
 #-------------------------------------------------------------------------------
       
-    def getCycle( self ):
+    def getCycle( self ) -> int:
     
         '''
           Returns the current cycle ID
@@ -291,7 +294,7 @@ class oscar():
 #  getElemNodes
 #-------------------------------------------------------------------------------
       
-    def getElemNodes( self , elemID ):
+    def getElemNodes( self , elemID : int ) -> list:
   
         '''
         Returns nodes of element ID
@@ -314,7 +317,7 @@ class oscar():
 #  getElemNodeCount
 #-------------------------------------------------------------------------------
 
-    def getElemNodeCount( self , elemID ):
+    def getElemNodeCount( self , elemID : int ) -> int:
   
         '''
         Returns the number of nodes in this element
@@ -330,7 +333,7 @@ class oscar():
 #  getElemGroupNames
 #-------------------------------------------------------------------------------
     
-    def getElemGroupNames( self ):
+    def getElemGroupNames( self ) -> list:
   
         '''
         Returns all element group names
@@ -347,7 +350,7 @@ class oscar():
 #  getElemGroup
 #-------------------------------------------------------------------------------
     
-    def getElemGroup( self , name = "all" ):
+    def getElemGroup( self , name : str = "all" ) -> list[int]:
   
         '''
         Returns the element IDs in an elementset.
@@ -368,7 +371,7 @@ class oscar():
 #  elemCount
 #-------------------------------------------------------------------------------
             
-    def elemCount( self , elemGroup = "all" ):
+    def elemCount( self , elemGroup : str = "all" ) -> int:
   
         '''
       Returns the number of elements in this data set (in this cycle).
@@ -387,7 +390,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def getElemIndex( self , elemID ):
+    def getElemIndex( self , elemID : int | list[int] ) -> list[int]:
    
         '''
           Return element Index
@@ -407,7 +410,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
 
-    def getElemIDs( self ):
+    def getElemIDs( self ) -> list[int]:
    
         '''
           Return element IDs in the set.
@@ -424,7 +427,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
 
-    def nodeCount( self , nodeGroup = 'all' ):
+    def nodeCount( self , nodeGroup : str = 'all' ) -> int:
   
         '''
         Returns the number of nodes in the nodegroup.
@@ -449,7 +452,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
 
-    def unpackElements( self , a , offsets ):
+    def unpackElements( self , a : list , offsets : list ) -> list:
              
         elemNodes = [None] * len(offsets)
         
@@ -464,7 +467,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def getNodeIndex( self , nodeID ):
+    def getNodeIndex( self , nodeID : int) -> int:
    
         '''
         Returns the index of nodeID. This is the index of the node in the input file.
@@ -485,7 +488,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
     
-    def getNodeIDs( self ):
+    def getNodeIDs( self ) -> list[int]:
    
         '''
         Returns a list of all the nodeIDs.
@@ -502,7 +505,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def getNodeGroupNames( self ):
+    def getNodeGroupNames( self ) -> list[str]:
   
         '''
         Returns the names of all NodeGroups in this data set.
@@ -517,7 +520,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
     
-    def getNodeGroup( self , name ):
+    def getNodeGroup( self , name : str ) -> list[int]:
   
         '''
         Returns the nodeID that are present in a certain NodeGroup.
@@ -538,7 +541,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
                          
-    def rank( self ):
+    def rank( self ) -> int:
   
         '''
         Returns the rank of the problem. This is the number of spatial
@@ -551,7 +554,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
 
-    def nodeDataSets( self ):
+    def nodeDataSets( self ) -> list[str]:
   
         '''
         Returns all the labels of node datasets.
@@ -564,7 +567,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
     
-    def elemDataSets( self ):
+    def elemDataSets( self ) -> list[str]:
   
         '''
         Returns all the labels of element datasets.
@@ -580,7 +583,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def getDisplacements( self , nodeID ):
+    def getDisplacements( self , nodeID : int ):
   
         '''
         Returns the displacements of nodes
@@ -597,7 +600,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
     
-    def getNodeData( self , label , nodeID=-1 ):
+    def getNodeData( self , label : str , nodeID : int =-1 ) ->list:
   
         '''
         Returns the node data (label) of nodes nodeID (can be a list or an integer).
@@ -624,7 +627,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------      
 
-    def getElemData( self , label , elemID=-1 ):
+    def getElemData( self , label : str , elemID : int=-1 ) -> list:
   
         '''
         Returns the element data (label) of elements elemID 
@@ -646,7 +649,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------      
 
-    def getMacroFieldData( self , label ):
+    def getMacroFieldData( self , label :str ) -> list:
   
         '''
         Returns the element data (label) of elements 
@@ -660,7 +663,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def particleCount( self , particleGroup = 'all' ):
+    def particleCount( self , particleGroup : str  = 'all' ) -> int:
   
         '''
         Returns the number of nodes in this set
@@ -677,7 +680,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def saveAsVTU( self , prefix = 'None' , cycles = -1 ):
+    def saveAsVTU( self , prefix : str = 'None' , cycles : int = -1 ):
   
         '''
         Saves the data as VTU format
@@ -860,7 +863,7 @@ class oscar():
 #  saveAsDat
 #-------------------------------------------------------------------------------
     
-    def saveAsDat( self , fileName = 'None' , cycle = -1 , output = "dawn"):
+    def saveAsDat( self , fileName : str = 'None' , cycle : int = -1 , output : str = "dawn") -> None:
   
         '''
       Saves the data as dawn data format
@@ -965,7 +968,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def saveModes( self , prefix = 'None' ):
+    def saveModes( self , prefix : str = 'None' ) -> None:
   
         '''
         Saves the data as VTU format
@@ -1014,7 +1017,4 @@ class oscar():
 
         pvdfile.write("<VTKFile byte_order='LittleEndian' ")
         pvdfile.write("type='Collection' version='0.1'>\n")
-        pvdfile.write("  <Collection>\n")
-        
-        
-        
+        pvdfile.write("  <Collection>\n")                      
