@@ -20,13 +20,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install sphinx sphinx-rtd-theme
+        python -m pip install -U sphinx
+        python -m pip install sphinx-rtd-theme
+        # python -m pip install sphinxcontrib-apidoc
+        python -m pip install sphinx-autoapi
 
-    - name: Build documentation
+    - name: make the sphinx docs
       run: |
-        cd docs
-        make clean
-        make html
+        make -C docs clean 
+        # sphinx-apidoc -f -o docs/source . -H Test -e -t docs/source/_templates
+        make -C docs html
 
     - name: Init new repo in dist folder and commit generated files
       run: |
