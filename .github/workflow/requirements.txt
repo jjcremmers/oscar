@@ -1,0 +1,5 @@
+Sphinx==5.0.2          # Sphinx itself (adjust version if necessary)
+sphinx-rtd-theme==1.0.0  # Theme for the documentation (optional, if you're using it)
+sphinxcontrib-mermaid==0.1.1  # Mermaid diagrams in your documentation (optional)
+sphinx-autodoc-typehints==1.15.0  # Automatically document type hints (optional)
+
