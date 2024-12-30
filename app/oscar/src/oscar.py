@@ -149,13 +149,12 @@ def PVDfileName( prefix : str , iCyc :int , iProc : int = -1 ) -> str:
 class oscar():
 
     '''
-      A class to read and access data in the HDF file format.
-      
-          Inits the class oscar
-           
-            Args: 
-            name:   filename. May be with or without the extension .h5
+    A class to read and access data in the HDF file format. sdd
             
+    Args: 
+        
+        fileName(str): filename May be with or without the extension .h5
+        verbose(bool): verbose flag.            
     '''  
 
     def __init__( self , fileName : str , verbose : bool = False ):
@@ -208,7 +207,7 @@ class oscar():
     def __str__( self ) -> str:
   
         '''
-         Prints the main contents of the file
+        Prints the main contents of the file
         '''
    
         if 'cycleCount' in self.f.attrs.keys():  
@@ -221,9 +220,9 @@ class oscar():
     def setCycle( self , iCyc : int ):
   
         '''
-         Set the cycle for which the output is read.  
+        Set the cycle for which the output is read.  
     
-         Args:
+        Args:
            iCyc:   Cycle ID number.  
         '''
     
