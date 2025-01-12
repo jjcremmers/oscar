@@ -5,7 +5,7 @@
   
 """
 import unittest
-from oscar import oscar
+from oscar.oscar import oscar
   
 class OscarTesting(unittest.TestCase):
     
