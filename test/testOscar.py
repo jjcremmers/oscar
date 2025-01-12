@@ -6,14 +6,16 @@
 """
 import unittest
 from oscar.oscar import oscar
+from pathlib import Path
   
 class OscarTesting(unittest.TestCase):
     
+    script_dir = Path(__file__).parent
 	
-    h5file = oscar( "test/pinched8.h5" )
+    h5file = oscar( script_dir / "pinched8.h5" )
     h5file.setCycle(9)          
     
-    h5fred = oscar( "test/pinched8_reduced.h5" )
+    h5fred = oscar( script_dir / "pinched8_reduced.h5" )
     h5fred.setCycle(9)      
         
     def test_getCoords(self):
