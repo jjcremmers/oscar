@@ -28,8 +28,7 @@ jobs:
 
     - name: Run tests
       run: |
-        cd test
-        python -m unittest discover -p "*.py"
+        python -m unittest discover -s test -p "*.py"
         
     - name: Run tests with coverage
       run: |
