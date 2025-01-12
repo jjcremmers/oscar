@@ -389,7 +389,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def getElemIndex( self , elemID : int | list[int] ) -> list[int]:
+    def getElemIndex( self , elemID ) -> list[int]:
    
         '''
           Return element Index
