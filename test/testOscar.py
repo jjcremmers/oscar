@@ -4,18 +4,18 @@
   (c) Joris Remmers (2021-2023)
   
 """
-import unittest
+import unittest,os
 from oscar.oscar import oscar
-from pathlib import Path
+
   
 class OscarTesting(unittest.TestCase):
     
-    script_dir = Path(__file__).parent
+    script_dir = os.path.dirname(os.path.abspath(__file__))
 	
-    h5file = oscar( script_dir / "pinched8.h5" )
+    h5file = oscar( os.path.join(script_dir, "pinched8.h5" ) )
     h5file.setCycle(9)          
     
-    h5fred = oscar( script_dir / "pinched8_reduced.h5" )
+    h5fred = oscar( os.path.join(script_dir, "pinched8_reduced.h5" ) )
     h5fred.setCycle(9)      
         
     def test_getCoords(self):
