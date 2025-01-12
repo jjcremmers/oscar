@@ -10,10 +10,10 @@ from oscar.oscar import oscar
 class OscarTesting(unittest.TestCase):
     
 	
-    h5file = oscar( "pinched8.h5" )
+    h5file = oscar( "test/pinched8.h5" )
     h5file.setCycle(9)          
     
-    h5fred = oscar( "pinched8_reduced.h5" )
+    h5fred = oscar( "test/pinched8_reduced.h5" )
     h5fred.setCycle(9)      
         
     def test_getCoords(self):
