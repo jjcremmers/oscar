@@ -729,7 +729,13 @@ class oscar():
             #--Store elements-----------------------------
      
             for elemNodes in self.elemNodes:  
-                insertElement( grid , elemNodes , self.rank() , 0 )
+            
+                tt = 0
+            
+                if len(elemNodes) < 8:
+                    tt = 2
+                    
+                insertElement( grid , elemNodes , self.rank() , tt )
               
             # -- Write nodedata
   
@@ -779,6 +785,8 @@ class oscar():
                 grid.GetCellData().AddArray( d )        
 
             writer.SetInputData(grid)
+            writer.SetDataModeToAscii()
+
             writer.Write()    
             
             '''
