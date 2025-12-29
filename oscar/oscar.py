@@ -14,7 +14,22 @@ import numpy as np
 from .VTKutils import insertElement
 
 def apply_rainbow_color_map(mapper):
-
+    """Apply a rainbow color map to a VTK mapper.
+    
+    Creates and applies a rainbow-style lookup table that maps scalar values
+    from blue to red (hue range 0.0 to 0.8).
+    
+    Args:
+        mapper: VTK mapper object to which the color map will be applied.
+        
+    Returns:
+        None
+        
+    Examples:
+        >>> mapper = vtk.vtkDataSetMapper()
+        >>> mapper.SetInputData(grid)
+        >>> apply_rainbow_color_map(mapper)
+    """
     rng = mapper.GetScalarRange()
 
     lookup_table = vtk.vtkLookupTable()
@@ -29,10 +44,24 @@ def apply_rainbow_color_map(mapper):
 #-------------------------------------------------------------------------------
    
 def versionCheck( f ):
-
-    '''
-    Checks if the file is an oscar file
-    '''
+    """Check if the file is a valid oscar HDF5 file.
+    
+    Verifies that the file format is 'RNDF' and the version is at least 1.0.
+    
+    Args:
+        f: HDF5 file object to check.
+        
+    Returns:
+        None
+        
+    Raises:
+        RuntimeError: If the file format is not 'RNDF' or version is less than 1.0.
+        
+    Examples:
+        >>> import h5py
+        >>> f = h5py.File('simulation.h5', 'r')
+        >>> versionCheck(f)
+    """
   
     if f.attrs['fileFormat'] != 'RNDF':
         print("Error")
@@ -47,20 +76,30 @@ def versionCheck( f ):
 #-------------------------------------------------------------------------------
 
 def convertToVTU( fileName , cycles = -1 ):
+    """Convert an oscar HDF5 file to VTU format.
     
-    '''
-    Converts the oscar .h5 file to a vtu file. The VTU file is written to the 
-    drive as fileName.vtu
+    Converts the specified oscar .h5 file to VTU (VTK Unstructured Grid) format.
+    The VTU files are written to disk with the pattern fileName_t<cycle>.vtu and
+    a PVD file is created for visualization.
     
-    Arguments:
-        fileName     the name of the h5 file (string)
-        cycles       a list of cycles that is converted.
-                     If cycles is equal to -1, all cycles
-                     are converted.
+    Args:
+        fileName (str): The name of the h5 file (with or without .h5 extension).
+        cycles (int or list, optional): List or integer of cycle numbers to convert.
+            If -1 (default), all cycles are converted.
                      
-    Returns:                     
-        --
-    '''
+    Returns:
+        None
+        
+    Examples:
+        >>> # Convert all cycles
+        >>> convertToVTU('simulation.h5')
+        
+        >>> # Convert specific cycles
+        >>> convertToVTU('simulation.h5', cycles=[1, 5, 10])
+        
+        >>> # Convert single cycle
+        >>> convertToVTU('simulation', cycles=3)
+    """
     
     oscarFile = oscar( fileName , cycles )
   
@@ -71,20 +110,26 @@ def convertToVTU( fileName , cycles = -1 ):
 #-------------------------------------------------------------------------------
 
 def convertToDat( fileName , cycles = -1 ):
-
-    '''
-    Converts the oscar .h5 file to a dawn dat file. The dat file is written 
-    to the drive as fileName.dat
+    """Convert an oscar HDF5 file to Dawn DAT format.
     
-    Arguments:
-        fileName     the name of the h5 file (string)
-        cycles       a list of cycles that is converted.
-                     If cycles is equal to -1, all cycles
-                     are converted.
+    Converts the specified oscar .h5 file to Dawn DAT format.
+    The DAT file is written to disk as fileName.dat.
+    
+    Args:
+        fileName (str): The name of the h5 file (with or without .h5 extension).
+        cycles (int or list, optional): List or integer of cycle numbers to convert.
+            If -1 (default), all cycles are converted.
                      
-    Returns:                     
-        --
-    '''
+    Returns:
+        None
+        
+    Examples:
+        >>> # Convert all cycles to DAT format
+        >>> convertToDat('simulation.h5')
+        
+        >>> # Convert specific cycles
+        >>> convertToDat('simulation', cycles=[1, 10, 20])
+    """
     
     oscarFile = oscar( fileName , cycles )
   
@@ -95,14 +140,35 @@ def convertToDat( fileName , cycles = -1 ):
 #-------------------------------------------------------------------------------
     
 def writePVD( prefix , cycles , nProc = 1 ):
-      
-    '''
+    """Write a ParaView Data (PVD) file for a collection of VTU files.
     
-    '''
+    Creates a PVD file that references multiple VTU files for time series
+    visualization in ParaView. Supports both serial and parallel (multi-processor)
+    data files.
+    
+    Args:
+        prefix (str): Prefix for the PVD filename and referenced VTU files.
+        cycles (list): List of cycle (timestep) numbers to include.
+        nProc (int, optional): Number of processors. If > 1, includes files from
+            multiple processors. Default is 1.
+            
+    Returns:
+        None
+        
+    Raises:
+        RuntimeError: If nProc < 1.
+        
+    Examples:
+        >>> # Serial simulation
+        >>> writePVD('results', [1, 2, 3, 4, 5])
+        
+        >>> # Parallel simulation with 4 processors
+        >>> writePVD('parallel_results', [1, 2, 3], nProc=4)
+    """
     
     if nProc < 1:
         print("writePVD: number of processros should by 1 or more.")
-        raise RunTimeError    
+        raise RuntimeError    
     
     pvdfile = open(prefix+".pvd", 'w')
 
@@ -130,10 +196,29 @@ def writePVD( prefix , cycles , nProc = 1 ):
 
 
 def PVDfileName( prefix : str , iCyc :int , iProc : int = -1 ) -> str:
-
-    '''
+    """Generate a VTU filename for use in PVD files.
     
-    '''
+    Creates a standardized filename for VTU files based on prefix, cycle number,
+    and optionally processor number.
+    
+    Args:
+        prefix (str): Filename prefix.
+        iCyc (int): Cycle (timestep) number.
+        iProc (int, optional): Processor number. If -1 (default), creates a
+            serial filename. Otherwise creates a parallel filename.
+            
+    Returns:
+        str: Formatted VTU filename.
+        
+    Examples:
+        >>> # Serial filename
+        >>> PVDfileName('simulation', 5)
+        'simulation_t5.vtu'
+        
+        >>> # Parallel filename for processor 2
+        >>> PVDfileName('simulation', 5, iProc=2)
+        'simulation_p2_t5.vtu'
+    """
     
     if iProc == -1:
         return prefix + "_t" + str(iCyc) + ".vtu"
@@ -158,10 +243,26 @@ class oscar():
     '''  
 
     def __init__( self , fileName : str , verbose : bool = False ):
-
-        '''
-        Constructor
-        '''
+        """Initialize an oscar object for reading HDF5 NDF files.
+        
+        Opens the specified HDF5 file and initializes data structures for
+        accessing mesh, nodes, elements, and simulation results.
+        
+        Args:
+            fileName (str): Path to the HDF5 file (with or without .h5 extension).
+            verbose (bool, optional): If True, prints informational messages.
+                Default is False.
+                
+        Raises:
+            RuntimeError: If the file version is less than 1.0.
+            
+        Examples:
+            >>> # Open a file silently
+            >>> oscarFile = oscar('simulation.h5')
+            
+            >>> # Open with verbose output
+            >>> oscarFile = oscar('simulation', verbose=True)
+        """
             
         if not fileName.endswith('.h5'):
             fileName += '.h5'
@@ -205,10 +306,19 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def __str__( self ) -> str:
-  
-        '''
-        Prints the main contents of the file
-        '''
+        """Return a string representation of the oscar object.
+        
+        Provides a summary of the file contents, specifically the number
+        of datasets (cycles) in the file.
+        
+        Returns:
+            str: Description of the file contents.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> print(oscarFile)
+            Single file with 10 datasets (cycles).
+        """
    
         if 'cycleCount' in self.f.attrs.keys():  
             return "Single file with %d datasets (cycles)." %self.f.attrs['cycleCount']
@@ -218,13 +328,22 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def setCycle( self , iCyc : int ):
-  
-        '''
-        Set the cycle for which the output is read.  
-    
+        """Set the active cycle for data access.
+        
+        Changes the active cycle (timestep) from which data will be read.
+        Updates internal data structures to point to the specified cycle.
+        
         Args:
-           iCyc:   Cycle ID number.  
-        '''
+            iCyc (int): Cycle ID number to activate.
+            
+        Returns:
+            None
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(5)
+            >>> # Now all data access is from cycle 5
+        """
     
         self.cycle = iCyc
         self.data = self.f["cycle"+str(self.cycle)]
@@ -246,14 +365,27 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getCoords( self , nodeID : int = -1 ):
-  
-        '''
-          Gets the coordinates of node(s) nodeID
-      
-          Args:
-            nodeID:   nodeID (list or integrer) according to internal numbering
-                      if omitted, all nodes are printed.
-        '''
+        """Get the coordinates of specified node(s).
+        
+        Retrieves spatial coordinates for one or more nodes.
+        
+        Args:
+            nodeID (int or list, optional): Node ID(s) according to internal numbering.
+                If -1 (default), returns coordinates of all nodes.
+                
+        Returns:
+            numpy.ndarray: Node coordinates. Shape is (n_nodes, n_dimensions) for
+                multiple nodes or (n_dimensions,) for a single node.
+                
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> # Get all coordinates
+            >>> all_coords = oscarFile.getCoords()
+            >>> # Get single node coordinates
+            >>> node_coord = oscarFile.getCoords(5)
+            >>> # Get multiple nodes
+            >>> nodes_coord = oscarFile.getCoords([0, 5, 10])
+        """
       
         if nodeID == -1:
             return self.coordinates[:]
@@ -265,27 +397,47 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getCoords3( self ):
-  
-      '''
-      Returns the coordinates always in a 3D format (even if the rank is equal to 2).
-      '''
+        """Get node coordinates in 3D format.
+        
+        Returns the coordinates always in 3D format, padding with zeros if
+        the problem is 2D (rank equals 2).
+        
+        Args:
+            None
+            
+        Returns:
+            numpy.ndarray: Node coordinates with shape (n_nodes, 3).
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> # For 2D problems, z-coordinate will be padded with zeros
+            >>> coords_3d = oscarFile.getCoords3()
+            >>> print(coords_3d.shape)  # (n_nodes, 3)
+        """
               
-      if self.coordinates.shape[1] == 2:
-          data = np.zeros(shape=(dset.shape[0],3))
-          data[:,:2] = self.coordinates
-          return data
-      else:
-          return self.coordinates[:]
+        if self.coordinates.shape[1] == 2:
+            data = np.zeros(shape=(self.coordinates.shape[0],3))
+            data[:,:2] = self.coordinates
+            return data
+        else:
+            return self.coordinates[:]
 
 #-------------------------------------------------------------------------------
 #  getCycle
 #-------------------------------------------------------------------------------
       
     def getCycle( self ) -> int:
-    
-        '''
-          Returns the current cycle ID
-        '''
+        """Get the current active cycle number.
+        
+        Returns:
+            int: The currently active cycle ID.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(3)
+            >>> current = oscarFile.getCycle()
+            >>> print(current)  # 3
+        """
     
         return self.cycle  
       
@@ -294,14 +446,19 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getElemNodes( self , elemID : int ) -> list:
-  
-        '''
-        Returns nodes of element ID
-    
+        """Get the node connectivity for a specified element.
+        
         Args:
-    
-            elemID:    elementID number.
-        '''
+            elemID (int): Element ID number.
+            
+        Returns:
+            list: List of node IDs that form the element.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> nodes = oscarFile.getElemNodes(10)
+            >>> print(nodes)  # [23, 45, 67, 89] for a quad element
+        """
    
         '''
         if elemID == 0:
@@ -317,14 +474,19 @@ class oscar():
 #-------------------------------------------------------------------------------
 
     def getElemNodeCount( self , elemID : int ) -> int:
-  
-        '''
-        Returns the number of nodes in this element
-    
+        """Get the number of nodes in a specified element.
+        
         Args:
-    
-            elemID:    element ID number. This is an integer.
-        '''
+            elemID (int): Element ID number.
+            
+        Returns:
+            int: Number of nodes in the element.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> n_nodes = oscarFile.getElemNodeCount(10)
+            >>> print(n_nodes)  # 4 for quad, 8 for hex, etc.
+        """
     
         return len(self.elemNodes[elemID])
 
@@ -333,10 +495,16 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getElemGroupNames( self ) -> list:
-  
-        '''
-        Returns all element group names
-        '''
+        """Get the names of all element groups in the dataset.
+        
+        Returns:
+            list: List of element group names as strings.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> groups = oscarFile.getElemGroupNames()
+            >>> print(groups)  # ['domain', 'boundary', 'interface']
+        """
         
         if 'elementGroups' in self.data.keys():    
             return list(self.data['elementGroups'].keys())
@@ -350,14 +518,22 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getElemGroup( self , name : str = "all" ) -> list[int]:
-  
-        '''
-        Returns the element IDs in an elementset.
-      
+        """Get element IDs belonging to a specified element group.
+        
         Args:
-    
-            name:    Name of the elementset. By defauls all element IDs are given.  
-        '''
+            name (str, optional): Name of the element group. If "all" (default),
+                returns all element IDs in the dataset.
+                
+        Returns:
+            list[int]: List of element IDs in the group.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> # Get all elements
+            >>> all_elems = oscarFile.getElemGroup()
+            >>> # Get specific group
+            >>> boundary_elems = oscarFile.getElemGroup('boundary')
+        """
     
         if name == "all":
             return list(range(self.elemCount("all")))
@@ -371,14 +547,21 @@ class oscar():
 #-------------------------------------------------------------------------------
             
     def elemCount( self , elemGroup : str = "all" ) -> int:
-  
-        '''
-      Returns the number of elements in this data set (in this cycle).
-      
-      Args:
-        elemGroup:  specify an element group. In that case it returns the 
-                    number of elements in that group.      
-        '''
+        """Get the number of elements in the dataset or a specific group.
+        
+        Args:
+            elemGroup (str, optional): Name of an element group. If "all" (default),
+                returns the total number of elements in the dataset.
+                
+        Returns:
+            int: Number of elements in the dataset or group.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> total = oscarFile.elemCount()
+            >>> print(f"Total elements: {total}")
+            >>> boundary_count = oscarFile.elemCount('boundary')
+        """
     
         if elemGroup == 'all':
             return len(self.elemNodes)
@@ -390,13 +573,21 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getElemIndex( self , elemID ) -> list[int]:
-   
-        '''
-          Return element Index
-      
-          Args:
-            elemID:   integer or list of elementIDs
-        '''
+        """Get the internal index for a specified element ID.
+        
+        Converts an element ID to its internal storage index in the HDF5 file.
+        
+        Args:
+            elemID (int or list): Element ID or list of element IDs.
+            
+        Returns:
+            list[int]: Internal index or indices of the element(s).
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> index = oscarFile.getElemIndex(100)
+            >>> print(index)  # Internal index for element 100
+        """
     
         if 'elements' in self.f.keys():    
             grp = self.f['elements']
@@ -410,10 +601,16 @@ class oscar():
 #-------------------------------------------------------------------------------
 
     def getElemIDs( self ) -> list[int]:
-   
-        '''
-          Return element IDs in the set.
-        '''
+        """Get all element IDs in the dataset.
+        
+        Returns:
+            list[int]: Array of all element IDs.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> elem_ids = oscarFile.getElemIDs()
+            >>> print(f"First 5 elements: {elem_ids[:5]}")
+        """
  
         if 'elements' in self.f.keys():        
             grp = self.f['elements']
@@ -427,15 +624,21 @@ class oscar():
 #-------------------------------------------------------------------------------
 
     def nodeCount( self , nodeGroup : str = 'all' ) -> int:
-  
-        '''
-        Returns the number of nodes in the nodegroup.
-    
+        """Get the number of nodes in the dataset or a specific group.
+        
         Args:
-    
-             nodeGroup:    nodeGroup name. By defaults the total number
-                           of nodes is given.
-        '''
+            nodeGroup (str, optional): Node group name. If 'all' (default),
+                returns the total number of nodes in the dataset.
+                
+        Returns:
+            int: Number of nodes in the dataset or group.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> total_nodes = oscarFile.nodeCount()
+            >>> print(f"Total nodes: {total_nodes}")
+            >>> fixed_nodes = oscarFile.nodeCount('fixed')
+        """
     
         if nodeGroup == 'all':
             return self.coordinates.shape[0]
@@ -452,7 +655,26 @@ class oscar():
 #-------------------------------------------------------------------------------
 
     def unpackElements( self , a : list , offsets : list ) -> list:
-             
+        """Unpack element connectivity from flat array using offset indices.
+        
+        Converts a flat connectivity array and offset array into a list of
+        element connectivity lists.
+        
+        Args:
+            a (list): Flat array of node IDs.
+            offsets (list): Array of offset indices marking element boundaries.
+            
+        Returns:
+            list: List of element connectivity lists, where each element is
+                a list of node IDs.
+                
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> connectivity = [0, 1, 2, 3, 3, 4, 5, 6]
+            >>> offsets = [4, 8]  # Two elements with 4 nodes each
+            >>> elements = oscarFile.unpackElements(connectivity, offsets)
+            >>> print(elements)  # [[0, 1, 2, 3], [3, 4, 5, 6]]
+        """
         elemNodes = [None] * len(offsets)
         
         elemNodes[0] = a[0:offsets[0]]
@@ -467,14 +689,21 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getNodeIndex( self , nodeID : int) -> int:
-   
-        '''
-        Returns the index of nodeID. This is the index of the node in the input file.
-    
+        """Get the internal index for a specified node ID.
+        
+        Converts a node ID to its internal storage index in the HDF5 file.
+        
         Args:
-    
-            nodeID:   The nodeID. This can be an integer or a list.
-        '''
+            nodeID (int or list): The node ID. Can be an integer or a list.
+            
+        Returns:
+            int: Internal index of the node.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> index = oscarFile.getNodeIndex(250)
+            >>> print(index)  # Internal index for node 250
+        """
 
         if 'nodes' in self.f.keys():                           
             grp = self.f['nodes']
@@ -488,10 +717,16 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getNodeIDs( self ) -> list[int]:
-   
-        '''
-        Returns a list of all the nodeIDs.
-        '''
+        """Get all node IDs in the dataset.
+        
+        Returns:
+            list[int]: Array of all node IDs.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> node_ids = oscarFile.getNodeIDs()
+            >>> print(f"First 10 nodes: {node_ids[:10]}")
+        """
 
         if 'nodes' in self.f.keys():                           
             grp = self.f['nodes']                
@@ -505,10 +740,16 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getNodeGroupNames( self ) -> list[str]:
-  
-        '''
-        Returns the names of all NodeGroups in this data set.
-        '''
+        """Get the names of all node groups in the dataset.
+        
+        Returns:
+            list[str]: List of node group names.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> groups = oscarFile.getNodeGroupNames()
+            >>> print(groups)  # ['fixed', 'loaded', 'free']
+        """
     
         if 'nodes' in self.f.keys():                           
             return list(self.f['nodeGroups'].keys())
@@ -520,14 +761,19 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getNodeGroup( self , name : str ) -> list[int]:
-  
-        '''
-        Returns the nodeID that are present in a certain NodeGroup.
-    
+        """Get node IDs belonging to a specified node group.
+        
         Args:
-      
-            name:    Name of the nodegroup.       
-        '''
+            name (str): Name of the node group.
+            
+        Returns:
+            list[int]: Array of node IDs in the group.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> fixed_nodes = oscarFile.getNodeGroup('fixed')
+            >>> print(f"Fixed nodes: {fixed_nodes}")
+        """
 
         if 'nodes' in self.f.keys():                               
             grp = self.f['nodeGroups']        
@@ -541,11 +787,16 @@ class oscar():
 #-------------------------------------------------------------------------------
                          
     def rank( self ) -> int:
-  
-        '''
-        Returns the rank of the problem. This is the number of spatial
-            dimensions.
-        '''
+        """Get the spatial dimension of the problem.
+        
+        Returns:
+            int: Number of spatial dimensions (2 for 2D, 3 for 3D).
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> dim = oscarFile.rank()
+            >>> print(f"Problem dimension: {dim}D")
+        """
   
         return self.coordinates.shape[1]    
 
@@ -554,10 +805,17 @@ class oscar():
 #-------------------------------------------------------------------------------
 
     def nodeDataSets( self ) -> list[str]:
-  
-        '''
-        Returns all the labels of node datasets.
-        '''
+        """Get the names of all available node data fields.
+        
+        Returns:
+            list[str]: List of node data field names (e.g., 'displacements', 'S22').
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(5)
+            >>> datasets = oscarFile.nodeDataSets()
+            >>> print(datasets)  # ['displacements', 'S11', 'S22', 'S12']
+        """
     
         grp = self.data['nodeData']
         return list(grp.keys())
@@ -567,10 +825,17 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def elemDataSets( self ) -> list[str]:
-  
-        '''
-        Returns all the labels of element datasets.
-        '''
+        """Get the names of all available element data fields.
+        
+        Returns:
+            list[str]: List of element data field names, or empty list if none exist.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(3)
+            >>> datasets = oscarFile.elemDataSets()
+            >>> print(datasets)  # ['stress', 'strain', 'damage']
+        """
     
         if 'elementData' in self.data.keys():
             grp = self.data['elementData']
@@ -583,15 +848,26 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def getDisplacements( self , nodeID : int ):
-  
-        '''
-        Returns the displacements of nodes
-    
+        """Get displacement values for specified node(s).
+        
+        Convenience method that calls getNodeData with label='displacements'.
+        
         Args:
-      
-        nodeID:   node number. This can be an integer or a list. 
-                    By default the data of all nodes is given as an array.
-        '''       
+            nodeID (int or list): Node number(s). Can be an integer, list, or -1
+                for all nodes.
+                
+        Returns:
+            numpy.ndarray: Displacement values.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(10)
+            >>> # Get all displacements
+            >>> all_disp = oscarFile.getDisplacements(-1)
+            >>> # Get single node displacement
+            >>> node_disp = oscarFile.getDisplacements(5)
+            >>> print(node_disp)  # [0.001, -0.002]
+        """       
     
         return self.getNodeData( 'displacements' , nodeID )
 
@@ -600,16 +876,25 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def getNodeData( self , label : str , nodeID : int =-1 ) ->list:
-  
-        '''
-        Returns the node data (label) of nodes nodeID (can be a list or an integer).
-      
+        """Get data values for specified node(s) from a named dataset.
+        
         Args:
-      
-            label:    Name of the node dataset.
-            nodeID:   node number. This can be an integer or a list. 
-                      By default the data of all nodes is given as an array.
-        '''
+            label (str): Name of the node dataset (e.g., 'displacements', 'S22').
+            nodeID (int or list, optional): Node number(s). Can be an integer,
+                list, or -1 (default) for all nodes.
+                
+        Returns:
+            numpy.ndarray: Data values. For scalar data, shape is (n_nodes,) or scalar.
+                For vector data, shape is (n_nodes, n_components) or (n_components,).
+                
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(5)
+            >>> # Get stress S22 for all nodes
+            >>> stress = oscarFile.getNodeData('S22')
+            >>> # Get displacement for specific nodes
+            >>> disp = oscarFile.getNodeData('displacements', [0, 10, 20])
+        """
     
         grp  = self.data['nodeData']
         dset = grp[label]
@@ -627,11 +912,25 @@ class oscar():
 #-------------------------------------------------------------------------------      
 
     def getElemData( self , label : str , elemID : int=-1 ) -> list:
-  
-        '''
-        Returns the element data (label) of elements elemID 
-                (can be a list or an integer).
-        '''
+        """Get data values for specified element(s) from a named dataset.
+        
+        Args:
+            label (str): Name of the element dataset.
+            elemID (int or list, optional): Element number(s). Can be an integer,
+                list, or -1 (default) for all elements.
+                
+        Returns:
+            numpy.ndarray: Data values. For scalar data, shape is (n_elements,) or scalar.
+                For vector data, shape is (n_elements, n_components) or (n_components,).
+                
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(3)
+            >>> # Get strain for all elements
+            >>> strain = oscarFile.getElemData('strain')
+            >>> # Get damage for specific element
+            >>> damage = oscarFile.getElemData('damage', 25)
+        """
     
         grp  = self.data['elementData']
         dset = grp[label]
@@ -649,11 +948,20 @@ class oscar():
 #-------------------------------------------------------------------------------      
 
     def getMacroFieldData( self , label :str ) -> list:
-  
-        '''
-        Returns the element data (label) of elements 
-            elemID (can be a list or an integer).
-        '''
+        """Get macroscopic field data for a specified label.
+        
+        Args:
+            label (str): Name of the macrofield dataset.
+            
+        Returns:
+            numpy.ndarray: Macrofield data values.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(5)
+            >>> macro_stress = oscarFile.getMacroFieldData('stress')
+            >>> print(macro_stress)
+        """
     
         grp  = self.data['macrofield']
         return grp[label][:]
@@ -663,10 +971,21 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def particleCount( self , particleGroup : str  = 'all' ) -> int:
-  
-        '''
-        Returns the number of nodes in this set
-        '''
+        """Get the number of particles in the dataset or a specific group.
+        
+        Args:
+            particleGroup (str, optional): Particle group name. If 'all' (default),
+                returns the total number of particles.
+                
+        Returns:
+            int: Number of particles in the dataset or group.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> oscarFile.setCycle(10)
+            >>> total_particles = oscarFile.particleCount()
+            >>> active_particles = oscarFile.particleCount('active')
+        """
     
         if particleGroup == 'all':
             grp = self.data['particles']
@@ -680,17 +999,29 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def saveAsVTU( self , prefix : str = 'None' , cycles : int = -1 ):
-  
-        '''
-        Saves the data as VTU format
-      
+        """Export data to VTK Unstructured Grid (VTU) format.
+        
+        Creates VTU files for visualization in ParaView or other VTK-compatible
+        software. Also generates a PVD file for time series visualization.
+        
         Args:
-      
-          prefix: prefix of the pvd and vtu filenames. If omitted the
-                  prefix of the original vtu file is used.
-          cycle:  a list (or integer) of cycles that need
-                  to be written. If omitted, all files will be exported.
-        '''
+            prefix (str, optional): Prefix for output filenames. If 'None' (default),
+                uses the prefix of the original HDF5 file.
+            cycles (int or list, optional): Cycle number(s) to export. Can be an
+                integer, list, or -1 (default) to export all cycles.
+                
+        Returns:
+            list: List of cycle numbers that were exported.
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> # Export all cycles
+            >>> oscarFile.saveAsVTU()
+            >>> # Export specific cycles with custom prefix
+            >>> oscarFile.saveAsVTU(prefix='results', cycles=[1, 5, 10])
+            >>> # Export single cycle
+            >>> oscarFile.saveAsVTU(cycles=3)
+        """
     
         if prefix == 'None':
             prefix = self.prefix
@@ -871,16 +1202,30 @@ class oscar():
 #-------------------------------------------------------------------------------
     
     def saveAsDat( self , fileName : str = 'None' , cycle : int = -1 , output : str = "dawn") -> None:
-  
-        '''
-      Saves the data as dawn data format
-      
-      Args:
-      
-        fileName:  output filename. If not ending by .dat, it will be added.
-        cycle:     cycle number.
-        output:    ouput type.
-        '''
+        """Export data to Dawn DAT format.
+        
+        Creates a text-based DAT file containing mesh and simulation data.
+        
+        Args:
+            fileName (str, optional): Output filename. If 'None' (default), uses
+                the prefix of the HDF5 file. Extension .dat is added if not present.
+            cycle (int, optional): Cycle number to export. If -1 (default),
+                exports undeformed configuration from cycle 1.
+            output (str, optional): Output format type. Either 'dawn' or 'pyfem'.
+                Default is 'dawn'.
+                
+        Returns:
+            None
+            
+        Examples:
+            >>> oscarFile = oscar('simulation.h5')
+            >>> # Export undeformed mesh
+            >>> oscarFile.saveAsDat('mesh.dat')
+            >>> # Export deformed configuration at cycle 10
+            >>> oscarFile.saveAsDat('deformed.dat', cycle=10)
+            >>> # Export in PyFEM format
+            >>> oscarFile.saveAsDat('model.dat', cycle=5, output='pyfem')
+        """
     
         if fileName == 'None':
             fileName = self.prefix + '.dat'
@@ -976,10 +1321,25 @@ class oscar():
 #-------------------------------------------------------------------------------
       
     def saveModes( self , prefix : str = 'None' ) -> None:
-  
-        '''
-        Saves the data as VTU format
-        '''
+        """Export mode shapes to VTU format.
+        
+        Creates VTU files for visualization of mode shapes (e.g., from modal analysis).
+        
+        Args:
+            prefix (str, optional): Prefix for output filenames. If 'None' (default),
+                uses the prefix of the original HDF5 file.
+                
+        Returns:
+            None
+            
+        Note:
+            This method appears to be incomplete in the implementation.
+            
+        Examples:
+            >>> oscarFile = oscar('modal_analysis.h5')
+            >>> oscarFile.saveModes('modes')
+            >>> # Creates modes-1.vtu, modes-2.vtu, etc.
+        """
     
         if prefix == 'None':
             prefix = self.prefix
