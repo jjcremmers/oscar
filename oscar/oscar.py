@@ -1270,7 +1270,9 @@ class oscar():
             elemGroups = self.getElemGroupNames()
   
         k = 0
-      
+
+        elemGroups = ['all']
+             
         for grp in elemGroups:
             elemIDs = self.getElemGroup( grp )      
             for elemID in elemIDs:

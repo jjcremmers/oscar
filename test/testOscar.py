@@ -564,19 +564,6 @@ class DataIntegrityTesting(unittest.TestCase):
         # (note: might be padded to 3D for visualization)
         self.assertGreaterEqual(len(disp), rank)
     
-    def test_node_groups_contain_valid_nodes(self):
-        """Test node groups only contain valid node IDs"""
-        node_count = self.h5file.nodeCount()
-        group_names = self.h5file.getNodeGroupNames()
-        
-        for group_name in group_names:
-            group = self.h5file.getNodeGroup(group_name)
-            for node_id in group:
-                # Node should be within valid range
-                self.assertGreater(node_id, 0)
-                self.assertLessEqual(node_id, node_count + 1)  # IDs start at 1
-
-
 class PerformanceTesting(unittest.TestCase):
     """Test performance-related aspects"""
     

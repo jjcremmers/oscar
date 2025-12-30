@@ -1,0 +1,72 @@
+*.vtu
+*.pvd
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.aux
+*.out
+*.swp
+*.old
+*.orig  
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.class
+*.jar
+*.war
+*.ear
+
+# Build directories
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.tox/
+.nox/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+# Sphinx documentation
+docs/_build/
+# PyInstaller
+*.spec
+# C extensions
+*.so
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+# Spyder project settings
+.spyderproject
+
+# Rope project settings
+.ropeproject
+# mkdocs documentation
+
+
