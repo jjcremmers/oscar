@@ -9,9 +9,22 @@ from .oscar import oscar
 def getFileName( name : str , prefix : str = None ) -> str:
 
     '''
-    Returns the filename in h5 format
+    Returns the filename in HDF5 format with proper prefix and extension.
+    
+    Constructs a filename by adding an optional prefix and ensuring the .h5
+    extension is present. If a prefix is provided and the name doesn't start
+    with it, the prefix is prepended with an underscore separator.
   
-    Args: name of h5 file (oscar format)
+    Args:
+        name (str): Base name of the HDF5 file (oscar format)
+        prefix (str, optional): Prefix to prepend to the filename. Defaults to None.
+        
+    Returns:
+        str: Formatted filename with prefix and .h5 extension
+        
+    Example:
+        >>> getFileName("mydata", prefix="sim")
+        "sim_mydata.h5"
     '''
   
     if prefix != None:
@@ -32,9 +45,21 @@ def getFileName( name : str , prefix : str = None ) -> str:
 def getConductivity( baseName : str , props : str = None ) -> float:
 
     '''
-    Returns the themral conductivity
+    Returns the thermal conductivity tensor components from RVE simulations.
+    
+    Reads thermal conductivity data from three separate HDF5 files (one for each
+    direction) and returns the conductivity components as a list.
   
-    Args: name of h5 file (oscar format)
+    Args:
+        baseName (str): Base name of the HDF5 files (oscar format)
+        props (str, optional): Additional properties parameter. Defaults to None.
+        
+    Returns:
+        list: Thermal conductivity components [k_x, k_y, k_z]
+        
+    Note:
+        Expects files named "cond_{baseName}_0.h5", "cond_{baseName}_1.h5",
+        and "cond_{baseName}_2.h5" to exist.
     '''
   
     cond = []
@@ -56,9 +81,20 @@ def getConductivity( baseName : str , props : str = None ) -> float:
 def getCTE( baseName : str ) -> float:
 
     '''
-    Returns the coefficients of thermal expansion as an array
+    Returns the coefficients of thermal expansion (CTE) as an array.
+    
+    Reads thermal expansion coefficients from an HDF5 file containing
+    RVE homogenization results.
   
-    Args: name of h5 file (oscar format)
+    Args:
+        baseName (str): Base name of the HDF5 file (oscar format)
+        
+    Returns:
+        list: Coefficients of thermal expansion as a list
+        
+    Note:
+        Expects a file named "cte_{baseName}.h5" to exist with macro field
+        data for "thermalExpansion".
     '''
 
     fileName = "cte_" + baseName +".h5"    
@@ -74,12 +110,26 @@ def getCTE( baseName : str ) -> float:
 def getMechanical( baseName : str , eps : float  = 0.01 ) -> list:
 
     '''
-    Returns the mechanical properties by collecting all stresses
-    due to a given strain with magnitude eps.
+    Returns the mechanical properties from RVE homogenization analysis.
+    
+    Computes effective mechanical properties (Young's moduli, shear moduli,
+    Poisson's ratios, and stiffness matrix) by collecting stress responses
+    from six load cases corresponding to unit strains in each direction.
   
-    Args: baseName name of h5 file (oscar format)
-  
-          eps      strain magnitude
+    Args:
+        baseName (str): Base name of the HDF5 files (oscar format)
+        eps (float, optional): Strain magnitude used in the simulations. Defaults to 0.01.
+        
+    Returns:
+        tuple: A tuple containing:
+            - E (list): Young's moduli [E_x, E_y, E_z]
+            - G (list): Shear moduli [G_xy, G_xz, G_yz]
+            - nu (list): Poisson's ratios [nu_xy, nu_yz, nu_xz]
+            - cmat (numpy.ndarray): 6x6 stiffness matrix
+            
+    Note:
+        Expects files named "mech_{baseName}_0.h5" through "mech_{baseName}_5.h5"
+        corresponding to six independent strain states.
     '''
   
     stress = np.zeros(shape=(6,6))  
@@ -119,9 +169,20 @@ def getMechanical( baseName : str , eps : float  = 0.01 ) -> list:
 def getCapacity( baseName : str ) -> float:
   
     '''
-    Returns the heat capacity
+    Returns the specific heat capacity from RVE homogenization.
+    
+    Reads the volumetric average specific heat capacity from an HDF5 file
+    containing homogenized thermal properties.
   
-    Args: name of h5 file (oscar format)
+    Args:
+        baseName (str): Base name of the HDF5 file (oscar format)
+        
+    Returns:
+        float: Specific heat capacity value
+        
+    Note:
+        Expects a file named "capac_{baseName}.h5" to exist with macro field
+        data for "specificCapac".
     '''
   
     fileName = "capac_" + baseName + ".h5"
@@ -137,9 +198,20 @@ def getCapacity( baseName : str ) -> float:
 def getDensity( baseName : str ) -> float:
   
     '''
-    Returns the coefficients of thermal expansion as an array
+    Returns the effective density from RVE homogenization.
+    
+    Reads the volumetric average density from an HDF5 file containing
+    homogenized material properties.
   
-    Args: name of h5 file (oscar format)
+    Args:
+        baseName (str): Base name of the HDF5 file (oscar format)
+        
+    Returns:
+        float: Density value
+        
+    Note:
+        Expects a file named "capac_{baseName}.h5" to exist with macro field
+        data for "density".
     '''
   
     fileName = "capac_" + baseName + ".h5"

@@ -20,5 +20,10 @@ setup(
     ], 
     install_requires=["h5py >= 3.6" , "vtk >= 9.2" ],
     python_requires='>=3.10',
+    entry_points={
+        'console_scripts': [
+            'h5tovtk=oscar.cli:main',
+        ],
+    },
 )
 
