@@ -17,7 +17,6 @@ For installation instructions, see :doc:`install`.
 
    install
    api
-   modules
    examples
 
 Command-Line Interface
@@ -28,6 +27,8 @@ h5tovtk - HDF5 to VTU Converter
 
 The ``h5tovtk`` command-line tool converts Oscar HDF5 files to VTK Unstructured Grid (VTU) format
 for visualization in ParaView or other VTK-compatible software.
+
+For detailed usage examples, see :doc:`examples`.
 
 Basic Usage
 ~~~~~~~~~~~
@@ -57,57 +58,6 @@ Command-Line Options
       -p PREFIX, --prefix PREFIX
                             Output prefix for VTU files (default: use input filename)
       -v, --verbose         Increase output verbosity
-
-Examples
-~~~~~~~~
-
-**Convert all cycles:**
-
-.. code-block:: bash
-
-    h5tovtk simulation.h5
-
-This converts all time steps in the file.
-
-**Convert a specific cycle:**
-
-.. code-block:: bash
-
-    h5tovtk simulation.h5 -c 5
-
-Converts only cycle number 5 from the simulation.
-
-**Specify custom output prefix:**
-
-.. code-block:: bash
-
-    h5tovtk simulation.h5 -p results
-
-Creates output files with the prefix ``results`` instead of ``simulation``.
-
-**Verbose output:**
-
-.. code-block:: bash
-
-    h5tovtk simulation.h5 -v
-
-Shows detailed progress information during conversion.
-
-**Multi-processor files:**
-
-For simulations run on multiple processors, the files are typically named with a ``_p#`` suffix
-(e.g., ``simulation_p0.h5``, ``simulation_p1.h5``, etc.). Simply use the base name::
-
-    h5tovtk simulation
-
-The tool automatically detects all processor files and creates:
-
-* Individual VTU files for each processor and cycle
-* A combined PVD file for parallel visualization
-
-File name without extension also works::
-
-    h5tovtk simulation.h5
 
 Output Files
 ~~~~~~~~~~~~
