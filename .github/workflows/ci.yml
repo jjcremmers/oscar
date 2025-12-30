@@ -10,7 +10,11 @@ on:
 
 jobs:
   test:
+    name: Test on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10" , "3.11", "3.12"]    
 
     steps:
     - name: Checkout code
