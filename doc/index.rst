@@ -15,6 +15,8 @@ For installation instructions, see :doc:`install`.
    :maxdepth: 2
    :caption: Contents:
 
+   index
+   about
    install
    api
    examples
