@@ -1,0 +1,1598 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oscar.oscar &mdash; Oscar  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Oscar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html#api-reference">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Python API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Oscar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oscar.oscar</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oscar.oscar</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;A set of classes and functions to read and transform hdf5 files in the NDF </span>
+<span class="sd">    file format.</span>
+
+<span class="sd">  (c) Joris Remmers (2021-2023)</span>
+<span class="sd">  </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">vtk</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+<span class="kn">from</span> <span class="nn">.VTKutils</span> <span class="kn">import</span> <span class="n">insertElement</span>
+
+<div class="viewcode-block" id="apply_rainbow_color_map">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.apply_rainbow_color_map">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_rainbow_color_map</span><span class="p">(</span><span class="n">mapper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a rainbow color map to a VTK mapper.</span>
+<span class="sd">    </span>
+<span class="sd">    Creates and applies a rainbow-style lookup table that maps scalar values</span>
+<span class="sd">    from blue to red (hue range 0.0 to 0.8).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        mapper: VTK mapper object to which the color map will be applied.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; mapper = vtk.vtkDataSetMapper()</span>
+<span class="sd">        &gt;&gt;&gt; mapper.SetInputData(grid)</span>
+<span class="sd">        &gt;&gt;&gt; apply_rainbow_color_map(mapper)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">GetScalarRange</span><span class="p">()</span>
+
+    <span class="n">lookup_table</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkLookupTable</span><span class="p">()</span>
+    <span class="n">lookup_table</span><span class="o">.</span><span class="n">SetNumberOfTableValues</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+    <span class="n">lookup_table</span><span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+    <span class="n">lookup_table</span><span class="o">.</span><span class="n">SetTableRange</span><span class="p">(</span><span class="n">rng</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">rng</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># Set the range of data values</span>
+    <span class="n">lookup_table</span><span class="o">.</span><span class="n">SetHueRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>  <span class="c1"># Map color hue from blue to red</span>
+    <span class="n">mapper</span><span class="o">.</span><span class="n">SetLookupTable</span><span class="p">(</span><span class="n">lookup_table</span><span class="p">)</span></div>
+
+ 
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+   
+<div class="viewcode-block" id="versionCheck">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.versionCheck">[docs]</a>
+<span class="k">def</span> <span class="nf">versionCheck</span><span class="p">(</span> <span class="n">f</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the file is a valid oscar HDF5 file.</span>
+<span class="sd">    </span>
+<span class="sd">    Verifies that the file format is &#39;RNDF&#39; and the version is at least 1.0.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        f: HDF5 file object to check.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If the file format is not &#39;RNDF&#39; or version is less than 1.0.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import h5py</span>
+<span class="sd">        &gt;&gt;&gt; f = h5py.File(&#39;simulation.h5&#39;, &#39;r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; versionCheck(f)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  
+    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;fileFormat&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;RNDF&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span>
+  
+    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error2&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span></div>
+
+    
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  convertToVTU</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="convertToVTU">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.convertToVTU">[docs]</a>
+<span class="k">def</span> <span class="nf">convertToVTU</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">,</span> <span class="n">cycles</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an oscar HDF5 file to VTU format.</span>
+<span class="sd">    </span>
+<span class="sd">    Converts the specified oscar .h5 file to VTU (VTK Unstructured Grid) format.</span>
+<span class="sd">    The VTU files are written to disk with the pattern fileName_t&lt;cycle&gt;.vtu and</span>
+<span class="sd">    a PVD file is created for visualization.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        fileName (str): The name of the h5 file (with or without .h5 extension).</span>
+<span class="sd">        cycles (int or list, optional): List or integer of cycle numbers to convert.</span>
+<span class="sd">            If -1 (default), all cycles are converted.</span>
+<span class="sd">                     </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Convert all cycles</span>
+<span class="sd">        &gt;&gt;&gt; convertToVTU(&#39;simulation.h5&#39;)</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Convert specific cycles</span>
+<span class="sd">        &gt;&gt;&gt; convertToVTU(&#39;simulation.h5&#39;, cycles=[1, 5, 10])</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Convert single cycle</span>
+<span class="sd">        &gt;&gt;&gt; convertToVTU(&#39;simulation&#39;, cycles=3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">,</span> <span class="n">cycles</span> <span class="p">)</span>
+  
+    <span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span></div>
+
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  convertToDat</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">convertToDat</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">,</span> <span class="n">cycles</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an oscar HDF5 file to Dawn DAT format.</span>
+<span class="sd">    </span>
+<span class="sd">    Converts the specified oscar .h5 file to Dawn DAT format.</span>
+<span class="sd">    The DAT file is written to disk as fileName.dat.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        fileName (str): The name of the h5 file (with or without .h5 extension).</span>
+<span class="sd">        cycles (int or list, optional): List or integer of cycle numbers to convert.</span>
+<span class="sd">            If -1 (default), all cycles are converted.</span>
+<span class="sd">                     </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Convert all cycles to DAT format</span>
+<span class="sd">        &gt;&gt;&gt; convertToDat(&#39;simulation.h5&#39;)</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Convert specific cycles</span>
+<span class="sd">        &gt;&gt;&gt; convertToDat(&#39;simulation&#39;, cycles=[1, 10, 20])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">,</span> <span class="n">cycles</span> <span class="p">)</span>
+  
+    <span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsDat</span><span class="p">()</span>
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="writePVD">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.writePVD">[docs]</a>
+<span class="k">def</span> <span class="nf">writePVD</span><span class="p">(</span> <span class="n">prefix</span> <span class="p">,</span> <span class="n">cycles</span> <span class="p">,</span> <span class="n">nProc</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a ParaView Data (PVD) file for a collection of VTU files.</span>
+<span class="sd">    </span>
+<span class="sd">    Creates a PVD file that references multiple VTU files for time series</span>
+<span class="sd">    visualization in ParaView. Supports both serial and parallel (multi-processor)</span>
+<span class="sd">    data files.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        prefix (str): Prefix for the PVD filename and referenced VTU files.</span>
+<span class="sd">        cycles (list): List of cycle (timestep) numbers to include.</span>
+<span class="sd">        nProc (int, optional): Number of processors. If &gt; 1, includes files from</span>
+<span class="sd">            multiple processors. Default is 1.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If nProc &lt; 1.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Serial simulation</span>
+<span class="sd">        &gt;&gt;&gt; writePVD(&#39;results&#39;, [1, 2, 3, 4, 5])</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Parallel simulation with 4 processors</span>
+<span class="sd">        &gt;&gt;&gt; writePVD(&#39;parallel_results&#39;, [1, 2, 3], nProc=4)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">nProc</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;writePVD: number of processros should by 1 or more.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span>    
+    
+    <span class="n">pvdfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">prefix</span><span class="o">+</span><span class="s2">&quot;.pvd&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+    <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;VTKFile byte_order=&#39;LittleEndian&#39; &quot;</span><span class="p">)</span>
+    <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;type=&#39;Collection&#39; version=&#39;0.1&#39;&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  &lt;Collection&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+      
+    <span class="k">for</span> <span class="n">iCyc</span> <span class="ow">in</span> <span class="n">cycles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">nProc</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    &lt;DataSet file=&#39;&quot;</span><span class="o">+</span><span class="n">PVDfileName</span><span class="p">(</span> <span class="n">prefix</span> <span class="p">,</span> <span class="n">iCyc</span> <span class="p">)</span><span class="o">+</span><span class="s2">&quot;&#39; &quot;</span><span class="p">)</span>
+            <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;groups=&#39;&#39; part=&#39;0&#39; timestep=&#39;&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iCyc</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;&#39;/&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">iProc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nProc</span><span class="p">):</span>
+                <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    &lt;DataSet file=&#39;&quot;</span> <span class="o">+</span> 
+                                <span class="n">PVDfileName</span><span class="p">(</span> <span class="n">prefix</span> <span class="p">,</span> <span class="n">iCyc</span> <span class="p">,</span> <span class="n">iProc</span> <span class="p">)</span><span class="o">+</span><span class="s2">&quot;&#39; &quot;</span><span class="p">)</span>
+                <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;groups=&#39;&#39; part=&#39;0&#39; timestep=&#39;&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iCyc</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;&#39;/&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>         
+                     
+    <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  &lt;/Collection&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/VTKFile&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+    
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="PVDfileName">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.PVDfileName">[docs]</a>
+<span class="k">def</span> <span class="nf">PVDfileName</span><span class="p">(</span> <span class="n">prefix</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">iCyc</span> <span class="p">:</span><span class="nb">int</span> <span class="p">,</span> <span class="n">iProc</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a VTU filename for use in PVD files.</span>
+<span class="sd">    </span>
+<span class="sd">    Creates a standardized filename for VTU files based on prefix, cycle number,</span>
+<span class="sd">    and optionally processor number.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        prefix (str): Filename prefix.</span>
+<span class="sd">        iCyc (int): Cycle (timestep) number.</span>
+<span class="sd">        iProc (int, optional): Processor number. If -1 (default), creates a</span>
+<span class="sd">            serial filename. Otherwise creates a parallel filename.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Formatted VTU filename.</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; # Serial filename</span>
+<span class="sd">        &gt;&gt;&gt; PVDfileName(&#39;simulation&#39;, 5)</span>
+<span class="sd">        &#39;simulation_t5.vtu&#39;</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Parallel filename for processor 2</span>
+<span class="sd">        &gt;&gt;&gt; PVDfileName(&#39;simulation&#39;, 5, iProc=2)</span>
+<span class="sd">        &#39;simulation_p2_t5.vtu&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">iProc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_t&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iCyc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtu&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iProc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_t&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iCyc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtu&quot;</span>     </div>
+
+            
+            
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="oscar">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar">[docs]</a>
+<span class="k">class</span> <span class="nc">oscar</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A class to read and access data in the HDF file format. sdd</span>
+<span class="sd">            </span>
+<span class="sd">    Args: </span>
+<span class="sd">        </span>
+<span class="sd">        fileName(str): filename May be with or without the extension .h5</span>
+<span class="sd">        verbose(bool): verbose flag.            </span>
+<span class="sd">    &#39;&#39;&#39;</span>  
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">fileName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an oscar object for reading HDF5 NDF files.</span>
+<span class="sd">        </span>
+<span class="sd">        Opens the specified HDF5 file and initializes data structures for</span>
+<span class="sd">        accessing mesh, nodes, elements, and simulation results.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            fileName (str): Path to the HDF5 file (with or without .h5 extension).</span>
+<span class="sd">            verbose (bool, optional): If True, prints informational messages.</span>
+<span class="sd">                Default is False.</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If the file version is less than 1.0.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; # Open a file silently</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; # Open with verbose output</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation&#39;, verbose=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+            
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fileName</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">):</span>
+            <span class="n">fileName</span> <span class="o">+=</span> <span class="s1">&#39;.h5&#39;</span>
+      
+        <span class="n">tempPrefix</span> <span class="o">=</span> <span class="n">fileName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">tempPrefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileDir</span> <span class="o">=</span> <span class="n">fileName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">fileName</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+    
+        <span class="k">if</span> <span class="s1">&#39;cycleCount&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Single file with </span><span class="si">%d</span><span class="s2"> datasets (cycles)&quot;</span>
+                       <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;cycleCount&#39;</span><span class="p">]</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;cycle1&quot;</span><span class="p">]</span>      
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;cycle1&quot;</span><span class="p">]</span>
+      
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error2&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>  
+      
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycleCount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;cycleCount&#39;</span><span class="p">]</span>   
+        
+        <span class="k">if</span> <span class="s1">&#39;elements&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">connectivity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">][</span><span class="s1">&#39;connectivity&#39;</span><span class="p">][:]</span>
+            <span class="n">offsets</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">][</span><span class="s1">&#39;offsets&#39;</span><span class="p">][:]</span>
+                    
+            <span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpackElements</span><span class="p">(</span> <span class="n">connectivity</span> <span class="p">,</span> <span class="n">offsets</span> <span class="p">)</span>
+            
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="s1">&#39;coordinates&#39;</span><span class="p">]</span>                  
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the oscar object.</span>
+<span class="sd">        </span>
+<span class="sd">        Provides a summary of the file contents, specifically the number</span>
+<span class="sd">        of datasets (cycles) in the file.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Description of the file contents.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; print(oscarFile)</span>
+<span class="sd">            Single file with 10 datasets (cycles).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+   
+        <span class="k">if</span> <span class="s1">&#39;cycleCount&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  
+            <span class="k">return</span> <span class="s2">&quot;Single file with </span><span class="si">%d</span><span class="s2"> datasets (cycles).&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;cycleCount&#39;</span><span class="p">]</span>
+      
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.setCycle">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.setCycle">[docs]</a>
+    <span class="k">def</span> <span class="nf">setCycle</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">iCyc</span> <span class="p">:</span> <span class="nb">int</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the active cycle for data access.</span>
+<span class="sd">        </span>
+<span class="sd">        Changes the active cycle (timestep) from which data will be read.</span>
+<span class="sd">        Updates internal data structures to point to the specified cycle.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            iCyc (int): Cycle ID number to activate.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Now all data access is from cycle 5</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle</span> <span class="o">=</span> <span class="n">iCyc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;cycle&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle</span><span class="p">)]</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;elements&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">connectivity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">][</span><span class="s1">&#39;connectivity&#39;</span><span class="p">][:]</span>
+            <span class="n">offsets</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">][</span><span class="s1">&#39;offsets&#39;</span><span class="p">][:]</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpackElements</span><span class="p">(</span> <span class="n">connectivity</span> <span class="p">,</span> <span class="n">offsets</span> <span class="p">)</span>            
+                        
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="s1">&#39;coordinates&#39;</span><span class="p">]</span>                  
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opened cycle </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle</span><span class="p">)</span></div>
+
+    
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getCoords</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getCoords">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getCoords">[docs]</a>
+    <span class="k">def</span> <span class="nf">getCoords</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">nodeID</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the coordinates of specified node(s).</span>
+<span class="sd">        </span>
+<span class="sd">        Retrieves spatial coordinates for one or more nodes.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodeID (int or list, optional): Node ID(s) according to internal numbering.</span>
+<span class="sd">                If -1 (default), returns coordinates of all nodes.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Node coordinates. Shape is (n_nodes, n_dimensions) for</span>
+<span class="sd">                multiple nodes or (n_dimensions,) for a single node.</span>
+<span class="sd">                </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Get all coordinates</span>
+<span class="sd">            &gt;&gt;&gt; all_coords = oscarFile.getCoords()</span>
+<span class="sd">            &gt;&gt;&gt; # Get single node coordinates</span>
+<span class="sd">            &gt;&gt;&gt; node_coord = oscarFile.getCoords(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Get multiple nodes</span>
+<span class="sd">            &gt;&gt;&gt; nodes_coord = oscarFile.getCoords([0, 5, 10])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+      
+        <span class="k">if</span> <span class="n">nodeID</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getCoords3</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getCoords3">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getCoords3">[docs]</a>
+    <span class="k">def</span> <span class="nf">getCoords3</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node coordinates in 3D format.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns the coordinates always in 3D format, padding with zeros if</span>
+<span class="sd">        the problem is 2D (rank equals 2).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Node coordinates with shape (n_nodes, 3).</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # For 2D problems, z-coordinate will be padded with zeros</span>
+<span class="sd">            &gt;&gt;&gt; coords_3d = oscarFile.getCoords3()</span>
+<span class="sd">            &gt;&gt;&gt; print(coords_3d.shape)  # (n_nodes, 3)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+              
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">))</span>
+            <span class="n">data</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getCycle</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getCycle">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getCycle">[docs]</a>
+    <span class="k">def</span> <span class="nf">getCycle</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current active cycle number.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The currently active cycle ID.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(3)</span>
+<span class="sd">            &gt;&gt;&gt; current = oscarFile.getCycle()</span>
+<span class="sd">            &gt;&gt;&gt; print(current)  # 3</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle</span>  </div>
+
+      
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getElemNodes</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getElemNodes">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemNodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemNodes</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">elemID</span> <span class="p">:</span> <span class="nb">int</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the node connectivity for a specified element.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            elemID (int): Element ID number.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of node IDs that form the element.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes = oscarFile.getElemNodes(10)</span>
+<span class="sd">            &gt;&gt;&gt; print(nodes)  # [23, 45, 67, 89] for a quad element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">   </span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        if elemID == 0:</span>
+<span class="sd">            return self.connectivity[0:self.offsets[elemID]]</span>
+<span class="sd">        else:</span>
+<span class="sd">            return self.connectivity[self.offsets[elemID-1]:self.offsets[elemID]]  </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span><span class="p">[</span><span class="n">elemID</span><span class="p">]</span>            </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getElemNodeCount</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="oscar.getElemNodeCount">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemNodeCount">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemNodeCount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">elemID</span> <span class="p">:</span> <span class="nb">int</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of nodes in a specified element.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            elemID (int): Element ID number.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of nodes in the element.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; n_nodes = oscarFile.getElemNodeCount(10)</span>
+<span class="sd">            &gt;&gt;&gt; print(n_nodes)  # 4 for quad, 8 for hex, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span><span class="p">[</span><span class="n">elemID</span><span class="p">])</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getElemGroupNames</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getElemGroupNames">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemGroupNames">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemGroupNames</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the names of all element groups in the dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of element group names as strings.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; groups = oscarFile.getElemGroupNames()</span>
+<span class="sd">            &gt;&gt;&gt; print(groups)  # [&#39;domain&#39;, &#39;boundary&#39;, &#39;interface&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;elementGroups&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elementGroups&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="s1">&#39;elementGroups&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elementGroups&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getElemGroup</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getElemGroup">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemGroup">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemGroup</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get element IDs belonging to a specified element group.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str, optional): Name of the element group. If &quot;all&quot; (default),</span>
+<span class="sd">                returns all element IDs in the dataset.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: List of element IDs in the group.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Get all elements</span>
+<span class="sd">            &gt;&gt;&gt; all_elems = oscarFile.getElemGroup()</span>
+<span class="sd">            &gt;&gt;&gt; # Get specific group</span>
+<span class="sd">            &gt;&gt;&gt; boundary_elems = oscarFile.getElemGroup(&#39;boundary&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elemCount</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="s1">&#39;elementGroups&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span> 
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elementGroups&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elementGroups&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][:]</span>        </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  elemCount</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+            
+<div class="viewcode-block" id="oscar.elemCount">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.elemCount">[docs]</a>
+    <span class="k">def</span> <span class="nf">elemCount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">elemGroup</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of elements in the dataset or a specific group.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            elemGroup (str, optional): Name of an element group. If &quot;all&quot; (default),</span>
+<span class="sd">                returns the total number of elements in the dataset.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of elements in the dataset or group.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; total = oscarFile.elemCount()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Total elements: {total}&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; boundary_count = oscarFile.elemCount(&#39;boundary&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">elemGroup</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="n">elemGroup</span><span class="p">))</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getElemIndex">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemIndex">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemIndex</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">elemID</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the internal index for a specified element ID.</span>
+<span class="sd">        </span>
+<span class="sd">        Converts an element ID to its internal storage index in the HDF5 file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            elemID (int or list): Element ID or list of element IDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: Internal index or indices of the element(s).</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; index = oscarFile.getElemIndex(100)</span>
+<span class="sd">            &gt;&gt;&gt; print(index)  # Internal index for element 100</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="s1">&#39;elements&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">]</span>
+            
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="s1">&#39;elementIDs&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">elemID</span><span class="p">)</span>      </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="oscar.getElemIDs">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemIDs">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemIDs</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all element IDs in the dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: Array of all element IDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; elem_ids = oscarFile.getElemIDs()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;First 5 elements: {elem_ids[:5]}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+ 
+        <span class="k">if</span> <span class="s1">&#39;elements&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>        
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">]</span>
+                        
+        <span class="k">return</span> <span class="n">grp</span><span class="p">[</span><span class="s1">&#39;elementIDs&#39;</span><span class="p">][:]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="oscar.nodeCount">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.nodeCount">[docs]</a>
+    <span class="k">def</span> <span class="nf">nodeCount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">nodeGroup</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of nodes in the dataset or a specific group.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodeGroup (str, optional): Node group name. If &#39;all&#39; (default),</span>
+<span class="sd">                returns the total number of nodes in the dataset.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of nodes in the dataset or group.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; total_nodes = oscarFile.nodeCount()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Total nodes: {total_nodes}&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; fixed_nodes = oscarFile.nodeCount(&#39;fixed&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">nodeGroup</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>        
+                <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span>
+            
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="n">nodeGroup</span><span class="p">])</span></div>
+
+            
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="oscar.unpackElements">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.unpackElements">[docs]</a>
+    <span class="k">def</span> <span class="nf">unpackElements</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">a</span> <span class="p">:</span> <span class="nb">list</span> <span class="p">,</span> <span class="n">offsets</span> <span class="p">:</span> <span class="nb">list</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpack element connectivity from flat array using offset indices.</span>
+<span class="sd">        </span>
+<span class="sd">        Converts a flat connectivity array and offset array into a list of</span>
+<span class="sd">        element connectivity lists.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            a (list): Flat array of node IDs.</span>
+<span class="sd">            offsets (list): Array of offset indices marking element boundaries.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of element connectivity lists, where each element is</span>
+<span class="sd">                a list of node IDs.</span>
+<span class="sd">                </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; connectivity = [0, 1, 2, 3, 3, 4, 5, 6]</span>
+<span class="sd">            &gt;&gt;&gt; offsets = [4, 8]  # Two elements with 4 nodes each</span>
+<span class="sd">            &gt;&gt;&gt; elements = oscarFile.unpackElements(connectivity, offsets)</span>
+<span class="sd">            &gt;&gt;&gt; print(elements)  # [[0, 1, 2, 3], [3, 4, 5, 6]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elemNodes</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span>
+        
+        <span class="n">elemNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">offsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">offsets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">elemNodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+            
+        <span class="k">return</span> <span class="n">elemNodes</span></div>
+
+      
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getNodeIndex">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getNodeIndex">[docs]</a>
+    <span class="k">def</span> <span class="nf">getNodeIndex</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">nodeID</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the internal index for a specified node ID.</span>
+<span class="sd">        </span>
+<span class="sd">        Converts a node ID to its internal storage index in the HDF5 file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodeID (int or list): The node ID. Can be an integer or a list.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Internal index of the node.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; index = oscarFile.getNodeIndex(250)</span>
+<span class="sd">            &gt;&gt;&gt; print(index)  # Internal index for node 250</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>                           
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span> 
+                                   
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="s1">&#39;nodeIDs&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nodeID</span><span class="p">)</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getNodeIDs">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getNodeIDs">[docs]</a>
+    <span class="k">def</span> <span class="nf">getNodeIDs</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all node IDs in the dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: Array of all node IDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; node_ids = oscarFile.getNodeIDs()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;First 10 nodes: {node_ids[:10]}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>                           
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span>                
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span>
+            
+        <span class="k">return</span> <span class="n">grp</span><span class="p">[</span><span class="s1">&#39;nodeIDs&#39;</span><span class="p">][:]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getNodeGroupNames">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getNodeGroupNames">[docs]</a>
+    <span class="k">def</span> <span class="nf">getNodeGroupNames</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the names of all node groups in the dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of node group names.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; groups = oscarFile.getNodeGroupNames()</span>
+<span class="sd">            &gt;&gt;&gt; print(groups)  # [&#39;fixed&#39;, &#39;loaded&#39;, &#39;free&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>                           
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getNodeGroup">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getNodeGroup">[docs]</a>
+    <span class="k">def</span> <span class="nf">getNodeGroup</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">name</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node IDs belonging to a specified node group.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Name of the node group.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: Array of node IDs in the group.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; fixed_nodes = oscarFile.getNodeGroup(&#39;fixed&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Fixed nodes: {fixed_nodes}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>                               
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span>        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodeGroups&#39;</span><span class="p">]</span>
+            
+        <span class="k">return</span> <span class="n">grp</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+                         
+<div class="viewcode-block" id="oscar.rank">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.rank">[docs]</a>
+    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the spatial dimension of the problem.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of spatial dimensions (2 for 2D, 3 for 3D).</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; dim = oscarFile.rank()</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Problem dimension: {dim}D&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+  
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="oscar.nodeDataSets">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.nodeDataSets">[docs]</a>
+    <span class="k">def</span> <span class="nf">nodeDataSets</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the names of all available node data fields.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of node data field names (e.g., &#39;displacements&#39;, &#39;S22&#39;).</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(5)</span>
+<span class="sd">            &gt;&gt;&gt; datasets = oscarFile.nodeDataSets()</span>
+<span class="sd">            &gt;&gt;&gt; print(datasets)  # [&#39;displacements&#39;, &#39;S11&#39;, &#39;S22&#39;, &#39;S12&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodeData&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+    
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.elemDataSets">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.elemDataSets">[docs]</a>
+    <span class="k">def</span> <span class="nf">elemDataSets</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the names of all available element data fields.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of element data field names, or empty list if none exist.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(3)</span>
+<span class="sd">            &gt;&gt;&gt; datasets = oscarFile.elemDataSets()</span>
+<span class="sd">            &gt;&gt;&gt; print(datasets)  # [&#39;stress&#39;, &#39;strain&#39;, &#39;damage&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="s1">&#39;elementData&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elementData&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.getDisplacements">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getDisplacements">[docs]</a>
+    <span class="k">def</span> <span class="nf">getDisplacements</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">nodeID</span> <span class="p">:</span> <span class="nb">int</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get displacement values for specified node(s).</span>
+<span class="sd">        </span>
+<span class="sd">        Convenience method that calls getNodeData with label=&#39;displacements&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodeID (int or list): Node number(s). Can be an integer, list, or -1</span>
+<span class="sd">                for all nodes.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Displacement values.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(10)</span>
+<span class="sd">            &gt;&gt;&gt; # Get all displacements</span>
+<span class="sd">            &gt;&gt;&gt; all_disp = oscarFile.getDisplacements(-1)</span>
+<span class="sd">            &gt;&gt;&gt; # Get single node displacement</span>
+<span class="sd">            &gt;&gt;&gt; node_disp = oscarFile.getDisplacements(5)</span>
+<span class="sd">            &gt;&gt;&gt; print(node_disp)  # [0.001, -0.002]</span>
+<span class="sd">        &quot;&quot;&quot;</span>       
+    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span> <span class="s1">&#39;displacements&#39;</span> <span class="p">,</span> <span class="n">nodeID</span> <span class="p">)</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.getNodeData">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getNodeData">[docs]</a>
+    <span class="k">def</span> <span class="nf">getNodeData</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">label</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">nodeID</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=-</span><span class="mi">1</span> <span class="p">)</span> <span class="o">-&gt;</span><span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get data values for specified node(s) from a named dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): Name of the node dataset (e.g., &#39;displacements&#39;, &#39;S22&#39;).</span>
+<span class="sd">            nodeID (int or list, optional): Node number(s). Can be an integer,</span>
+<span class="sd">                list, or -1 (default) for all nodes.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Data values. For scalar data, shape is (n_nodes,) or scalar.</span>
+<span class="sd">                For vector data, shape is (n_nodes, n_components) or (n_components,).</span>
+<span class="sd">                </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(5)</span>
+<span class="sd">            &gt;&gt;&gt; # Get stress S22 for all nodes</span>
+<span class="sd">            &gt;&gt;&gt; stress = oscarFile.getNodeData(&#39;S22&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Get displacement for specific nodes</span>
+<span class="sd">            &gt;&gt;&gt; disp = oscarFile.getNodeData(&#39;displacements&#39;, [0, 10, 20])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">grp</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodeData&#39;</span><span class="p">]</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="n">grp</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+    
+        <span class="k">if</span> <span class="n">nodeID</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+          <span class="k">return</span> <span class="n">dset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dset</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dset</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dset</span><span class="p">[</span><span class="n">nodeID</span><span class="p">,:]</span></div>
+
+         
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------      </span>
+
+<div class="viewcode-block" id="oscar.getElemData">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getElemData">[docs]</a>
+    <span class="k">def</span> <span class="nf">getElemData</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">label</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">elemID</span> <span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">1</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get data values for specified element(s) from a named dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): Name of the element dataset.</span>
+<span class="sd">            elemID (int or list, optional): Element number(s). Can be an integer,</span>
+<span class="sd">                list, or -1 (default) for all elements.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Data values. For scalar data, shape is (n_elements,) or scalar.</span>
+<span class="sd">                For vector data, shape is (n_elements, n_components) or (n_components,).</span>
+<span class="sd">                </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(3)</span>
+<span class="sd">            &gt;&gt;&gt; # Get strain for all elements</span>
+<span class="sd">            &gt;&gt;&gt; strain = oscarFile.getElemData(&#39;strain&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Get damage for specific element</span>
+<span class="sd">            &gt;&gt;&gt; damage = oscarFile.getElemData(&#39;damage&#39;, 25)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">grp</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elementData&#39;</span><span class="p">]</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="n">grp</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+    
+        <span class="k">if</span> <span class="n">elemID</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dset</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dset</span><span class="p">[</span><span class="n">elemID</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dset</span><span class="p">[</span><span class="n">elemID</span><span class="p">,:]</span>   </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------      </span>
+
+<div class="viewcode-block" id="oscar.getMacroFieldData">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.getMacroFieldData">[docs]</a>
+    <span class="k">def</span> <span class="nf">getMacroFieldData</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">label</span> <span class="p">:</span><span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get macroscopic field data for a specified label.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): Name of the macrofield dataset.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Macrofield data values.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(5)</span>
+<span class="sd">            &gt;&gt;&gt; macro_stress = oscarFile.getMacroFieldData(&#39;stress&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; print(macro_stress)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">grp</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;macrofield&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">grp</span><span class="p">[</span><span class="n">label</span><span class="p">][:]</span></div>
+
+         
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.particleCount">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.particleCount">[docs]</a>
+    <span class="k">def</span> <span class="nf">particleCount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">particleGroup</span> <span class="p">:</span> <span class="nb">str</span>  <span class="o">=</span> <span class="s1">&#39;all&#39;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of particles in the dataset or a specific group.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            particleGroup (str, optional): Particle group name. If &#39;all&#39; (default),</span>
+<span class="sd">                returns the total number of particles.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of particles in the dataset or group.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.setCycle(10)</span>
+<span class="sd">            &gt;&gt;&gt; total_particles = oscarFile.particleCount()</span>
+<span class="sd">            &gt;&gt;&gt; active_particles = oscarFile.particleCount(&#39;active&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">particleGroup</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">grp</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;particleGroups&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="n">particleGroup</span><span class="p">])</span>        </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.saveAsVTU">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.saveAsVTU">[docs]</a>
+    <span class="k">def</span> <span class="nf">saveAsVTU</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">prefix</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span> <span class="p">,</span> <span class="n">cycles</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export data to VTK Unstructured Grid (VTU) format.</span>
+<span class="sd">        </span>
+<span class="sd">        Creates VTU files for visualization in ParaView or other VTK-compatible</span>
+<span class="sd">        software. Also generates a PVD file for time series visualization.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str, optional): Prefix for output filenames. If &#39;None&#39; (default),</span>
+<span class="sd">                uses the prefix of the original HDF5 file.</span>
+<span class="sd">            cycles (int or list, optional): Cycle number(s) to export. Can be an</span>
+<span class="sd">                integer, list, or -1 (default) to export all cycles.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of cycle numbers that were exported.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Export all cycles</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsVTU()</span>
+<span class="sd">            &gt;&gt;&gt; # Export specific cycles with custom prefix</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsVTU(prefix=&#39;results&#39;, cycles=[1, 5, 10])</span>
+<span class="sd">            &gt;&gt;&gt; # Export single cycle</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsVTU(cycles=3)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span>
+      
+        <span class="n">vtufiles</span> <span class="o">=</span> <span class="p">[]</span>
+    
+        <span class="k">if</span> <span class="n">cycles</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">cycles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">cycleCount</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">cycles</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">cycles</span> <span class="o">=</span> <span class="p">[</span><span class="n">cycles</span><span class="p">]</span>  
+      
+        <span class="k">for</span> <span class="n">iCyc</span> <span class="ow">in</span> <span class="n">cycles</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span> <span class="n">iCyc</span> <span class="p">)</span>
+
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkXMLUnstructuredGridWriter</span><span class="p">()</span>
+  
+            <span class="n">vtufile</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_t&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iCyc</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.vtu&quot;</span>
+            
+            <span class="n">writer</span><span class="o">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">vtufile</span><span class="p">)</span>
+      
+            <span class="n">vtufiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vtufile</span><span class="p">)</span>
+  
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkUnstructuredGrid</span><span class="p">()</span>
+  
+            <span class="c1"># -- Read metadata</span>
+    
+            <span class="n">points</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPoints</span><span class="p">()</span>
+   
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCoords3</span><span class="p">()</span>
+      
+            <span class="k">for</span> <span class="n">crd</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+                <span class="n">points</span><span class="o">.</span><span class="n">InsertNextPoint</span><span class="p">(</span><span class="n">crd</span><span class="p">)</span>
+
+            <span class="n">grid</span><span class="o">.</span><span class="n">SetPoints</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>    
+    
+            <span class="c1">#--Store elements-----------------------------</span>
+     
+            <span class="k">for</span> <span class="n">elemNodes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elemNodes</span><span class="p">:</span>  
+            
+                <span class="n">tt</span> <span class="o">=</span> <span class="mi">0</span>
+            
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elemNodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="n">tt</span> <span class="o">=</span> <span class="mi">2</span>
+                    
+                <span class="n">insertElement</span><span class="p">(</span> <span class="n">grid</span> <span class="p">,</span> <span class="n">elemNodes</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="p">,</span> <span class="n">tt</span> <span class="p">)</span>
+              
+            <span class="c1"># -- Write nodedata</span>
+  
+            <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeDataSets</span><span class="p">()</span>
+      
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>            
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span> <span class="n">label</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;displacements&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">))</span>
+                            <span class="n">newdata</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+                            <span class="n">data</span> <span class="o">=</span> <span class="n">newdata</span>
+             												
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkDoubleArray</span><span class="p">();</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span> <span class="n">label</span> <span class="p">);</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">SetNumberOfComponents</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+                				
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                                <span class="n">d</span><span class="o">.</span><span class="n">InsertComponent</span><span class="p">(</span> <span class="n">i</span> <span class="p">,</span> <span class="n">j</span> <span class="p">,</span> <span class="n">l</span> <span class="p">)</span>
+                				        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkDoubleArray</span><span class="p">();</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span> <span class="n">label</span> <span class="p">);</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">SetNumberOfComponents</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+                    
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">InsertComponent</span><span class="p">(</span> <span class="n">i</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="n">l</span> <span class="p">)</span>
+                        
+                <span class="n">grid</span><span class="o">.</span><span class="n">GetPointData</span><span class="p">()</span><span class="o">.</span><span class="n">AddArray</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>
+        
+            <span class="c1"># -- Write elemdata</span>
+  
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span><span class="c1">#self.elemDataSets()</span>
+      
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span> <span class="n">label</span> <span class="p">)</span>
+             
+                <span class="n">d</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkDoubleArray</span><span class="p">();</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span> <span class="n">label</span> <span class="p">);</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">SetNumberOfComponents</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>        
+                    <span class="n">d</span><span class="o">.</span><span class="n">InsertComponent</span><span class="p">(</span> <span class="n">i</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="n">l</span> <span class="p">)</span>
+                   
+                <span class="n">grid</span><span class="o">.</span><span class="n">GetCellData</span><span class="p">()</span><span class="o">.</span><span class="n">AddArray</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>        
+
+            <span class="n">writer</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">SetDataModeToAscii</span><span class="p">()</span>
+
+            <span class="n">writer</span><span class="o">.</span><span class="n">Write</span><span class="p">()</span>    
+<span class="w">            </span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            if iCyc == 11:</span>
+<span class="sd">            </span>
+<span class="sd">                # Step 2: Set up a renderer and render window</span>
+<span class="sd">                stress_array = grid.GetPointData().GetArray(&quot;S22&quot;)</span>
+<span class="sd">                grid.GetPointData().SetScalars(stress_array)</span>
+
+<span class="sd">                # Create a mapper for the mesh</span>
+<span class="sd">                mapper = vtk.vtkDataSetMapper()</span>
+<span class="sd">                mapper.SetInputData(grid)</span>
+<span class="sd">                mapper.SetScalarRange(stress_array.GetRange())  # Set the color range based on the stress data</span>
+<span class="sd">                #mapper.SetScalarRange(0,100000000)</span>
+<span class="sd">	</span>
+<span class="sd">                # Apply a color map (for example, Jet)</span>
+<span class="sd">                apply_rainbow_color_map(mapper)</span>
+
+<span class="sd">                # Create an actor for the mesh</span>
+<span class="sd">                actor = vtk.vtkActor()</span>
+<span class="sd">                actor.SetMapper(mapper)</span>
+
+<span class="sd">                # Create a scalar bar actor for the legend</span>
+<span class="sd">                scalar_bar = vtk.vtkScalarBarActor()</span>
+<span class="sd">                scalar_bar.SetLookupTable(mapper.GetLookupTable())</span>
+<span class="sd">                scalar_bar.SetTitle(&quot;Stress&quot;)</span>
+<span class="sd">                scalar_bar.SetNumberOfLabels(4)  # Number of labels on the scalar bar</span>
+
+<span class="sd">                grid.GetPointData().SetVectors(grid.GetPointData().GetArray(&quot;displacements&quot;))</span>
+<span class="sd">                </span>
+<span class="sd">                warp_vector = vtk.vtkWarpVector()</span>
+<span class="sd">                warp_vector.SetInputData(grid)</span>
+<span class="sd">                warp_vector.SetScaleFactor(1.0)  # Apply magnification factor</span>
+
+<span class="sd">                # Update the warp vector filter</span>
+<span class="sd">                warp_vector.Update()</span>
+
+<span class="sd">                mapper = vtk.vtkDataSetMapper()</span>
+<span class="sd">                #mapper.SetInputData(grid)</span>
+<span class="sd">                mapper.SetInputConnection(warp_vector.GetOutputPort())</span>
+
+<span class="sd">                actor = vtk.vtkActor()</span>
+<span class="sd">                actor.SetMapper(mapper)</span>
+<span class="sd">                </span>
+<span class="sd">                </span>
+<span class="sd">                renderer = vtk.vtkRenderer()</span>
+<span class="sd">                renderer.AddActor(actor)</span>
+<span class="sd">                renderer.AddActor(scalar_bar)  # Add the scalar bar to the renderer                </span>
+<span class="sd">                renderer.SetBackground(1, 1, 1)  # Set background to white</span>
+
+<span class="sd">                render_window = vtk.vtkRenderWindow()</span>
+<span class="sd">                render_window.AddRenderer(renderer)</span>
+<span class="sd">                render_window.SetSize(800, 800)  # Set the size of the render window</span>
+
+<span class="sd">                </span>
+<span class="sd">                renderer.ResetCamera()</span>
+<span class="sd">                </span>
+<span class="sd">                camera = renderer.GetActiveCamera()</span>
+<span class="sd">                camera.Azimuth(245)  # Rotate the camera around the vertical axis</span>
+<span class="sd">                camera.Elevation(30)                </span>
+<span class="sd">                camera.Zoom(0.5)</span>
+<span class="sd">                </span>
+<span class="sd">                </span>
+<span class="sd">                                </span>
+<span class="sd">                window_to_image_filter = vtk.vtkWindowToImageFilter()</span>
+<span class="sd">                window_to_image_filter.SetInput(render_window)</span>
+<span class="sd">                window_to_image_filter.Update()</span>
+<span class="sd">                </span>
+<span class="sd">                # Step 6: Save the image as a PNG file</span>
+<span class="sd">                writer2 = vtk.vtkPNGWriter()</span>
+<span class="sd">                writer2.SetFileName(&quot;output_image.png&quot;)</span>
+<span class="sd">                writer2.SetInputData(window_to_image_filter.GetOutput())</span>
+<span class="sd">                writer2.Write()</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+                                 
+        <span class="n">writePVD</span><span class="p">(</span> <span class="n">prefix</span> <span class="p">,</span> <span class="n">cycles</span> <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">cycles</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  saveAsDat</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+    
+<div class="viewcode-block" id="oscar.saveAsDat">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.saveAsDat">[docs]</a>
+    <span class="k">def</span> <span class="nf">saveAsDat</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">fileName</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span> <span class="p">,</span> <span class="n">cycle</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">,</span> <span class="n">output</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dawn&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export data to Dawn DAT format.</span>
+<span class="sd">        </span>
+<span class="sd">        Creates a text-based DAT file containing mesh and simulation data.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            fileName (str, optional): Output filename. If &#39;None&#39; (default), uses</span>
+<span class="sd">                the prefix of the HDF5 file. Extension .dat is added if not present.</span>
+<span class="sd">            cycle (int, optional): Cycle number to export. If -1 (default),</span>
+<span class="sd">                exports undeformed configuration from cycle 1.</span>
+<span class="sd">            output (str, optional): Output format type. Either &#39;dawn&#39; or &#39;pyfem&#39;.</span>
+<span class="sd">                Default is &#39;dawn&#39;.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;simulation.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Export undeformed mesh</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsDat(&#39;mesh.dat&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Export deformed configuration at cycle 10</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsDat(&#39;deformed.dat&#39;, cycle=10)</span>
+<span class="sd">            &gt;&gt;&gt; # Export in PyFEM format</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveAsDat(&#39;model.dat&#39;, cycle=5, output=&#39;pyfem&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">fileName</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+            <span class="n">fileName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span>
+        
+        <span class="n">deformed</span> <span class="o">=</span> <span class="kc">True</span>    
+        
+        <span class="k">if</span> <span class="n">cycle</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">deformed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">cycle</span> <span class="o">=</span> <span class="mi">1</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span> <span class="n">cycle</span> <span class="p">)</span>
+
+        <span class="n">datFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+       
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span>
+    
+        <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;Nodes&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">deformed</span><span class="p">:</span>
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="n">coordinates</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span> <span class="s2">&quot;displacements&quot;</span> <span class="p">)</span>
+               
+        <span class="k">for</span> <span class="n">nodeID</span><span class="p">,</span><span class="n">crd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coordinates</span><span class="p">):</span>
+            <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">nodeID</span> <span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">crd</span><span class="p">:</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">x</span> <span class="p">)</span>
+            <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+      
+        <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/Nodes&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>      
+           
+        <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;Elements&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;dawn&#39;</span><span class="p">:</span>       
+            <span class="k">for</span> <span class="n">elemID</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()):</span>     
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">elemID</span> <span class="p">)</span>
+                <span class="n">elemNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemNodes</span><span class="p">(</span><span class="n">elemID</span><span class="p">)</span>
+      
+            <span class="k">for</span> <span class="n">iNod</span> <span class="ow">in</span> <span class="n">elemNodes</span><span class="p">:</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">iNod</span> <span class="p">)</span>
+            <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>       
+    
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;pyfem&#39;</span><span class="p">:</span>    
+            <span class="n">elemGroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemGroupNames</span><span class="p">()</span>
+  
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">elemGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span>
+             
+        <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">elemGroups</span><span class="p">:</span>
+            <span class="n">elemIDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span> <span class="n">grp</span> <span class="p">)</span>      
+            <span class="k">for</span> <span class="n">elemID</span> <span class="ow">in</span> <span class="n">elemIDs</span><span class="p">:</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">grp</span><span class="p">)</span> <span class="p">)</span>
+                <span class="n">elemNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemNodes</span><span class="p">(</span><span class="n">elemID</span><span class="p">)</span>
+      
+            <span class="k">for</span> <span class="n">iNod</span> <span class="ow">in</span> <span class="n">elemNodes</span><span class="p">:</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">iNod</span> <span class="p">)</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>      
+          
+                <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">)</span> 
+                  
+        <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/Elements&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>      
+        
+        <span class="n">nodeGroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeGroupNames</span><span class="p">()</span>
+  
+        <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">nodeGroups</span><span class="p">:</span>
+            <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;NodeGroup name = &#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;</span><span class="se">\n</span><span class="s2">  {&quot;</span> <span class="o">%</span><span class="n">grp</span><span class="p">)</span> 
+            <span class="n">nodeIDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span> <span class="n">grp</span> <span class="p">)</span>
+      
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">nodeID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodeIDs</span><span class="p">):</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">nodeID</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                 
+            <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; }</span><span class="se">\n</span><span class="s2">&lt;/NodeGroup&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span> 
+    
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;dawn&#39;</span><span class="p">:</span>    
+            <span class="n">elemGroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemGroupNames</span><span class="p">()</span>
+  
+            <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">elemGroups</span><span class="p">:</span>
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;ElementGroup name = &#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;</span><span class="se">\n</span><span class="s2">  {&quot;</span> <span class="o">%</span><span class="n">grp</span><span class="p">)</span> 
+                <span class="n">elemIDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span> <span class="n">grp</span> <span class="p">)</span>
+      
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">elemID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elemIDs</span><span class="p">):</span>
+                    <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">elemID</span><span class="p">)</span> 
+                    <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+                <span class="n">datFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; }</span><span class="se">\n</span><span class="s2">&lt;/ElementGroup&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>       
+        
+        <span class="n">datFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="oscar.saveModes">
+<a class="viewcode-back" href="../../api.html#oscar.oscar.oscar.saveModes">[docs]</a>
+    <span class="k">def</span> <span class="nf">saveModes</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">prefix</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export mode shapes to VTU format.</span>
+<span class="sd">        </span>
+<span class="sd">        Creates VTU files for visualization of mode shapes (e.g., from modal analysis).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str, optional): Prefix for output filenames. If &#39;None&#39; (default),</span>
+<span class="sd">                uses the prefix of the original HDF5 file.</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">            </span>
+<span class="sd">        Note:</span>
+<span class="sd">            This method appears to be incomplete in the implementation.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile = oscar(&#39;modal_analysis.h5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; oscarFile.saveModes(&#39;modes&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; # Creates modes-1.vtu, modes-2.vtu, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span>
+      
+        <span class="n">vtufiles</span> <span class="o">=</span> <span class="p">[]</span>
+    
+        <span class="k">if</span> <span class="n">cycles</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">cycles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">cycleCount</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+      
+        <span class="k">for</span> <span class="n">iMod</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkXMLUnstructuredGridWriter</span><span class="p">()</span>
+  
+            <span class="n">vtufile</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iMod</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.vtu&quot;</span>
+      
+            <span class="n">writer</span><span class="o">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">vtufile</span><span class="p">)</span>
+      
+            <span class="n">vtufiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vtufile</span><span class="p">)</span>
+  
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkUnstructuredGrid</span><span class="p">()</span>
+  
+            <span class="c1"># -- Read metadata</span>
+    
+            <span class="n">points</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPoints</span><span class="p">()</span>
+   
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCoords3</span><span class="p">()</span>
+      
+            <span class="k">for</span> <span class="n">crd</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+                <span class="n">points</span><span class="o">.</span><span class="n">InsertNextPoint</span><span class="p">(</span><span class="n">crd</span><span class="p">)</span>
+
+            <span class="n">grid</span><span class="o">.</span><span class="n">SetPoints</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>    
+    
+            <span class="c1">#--Store elements-----------------------------</span>
+     
+            <span class="k">for</span> <span class="n">iElm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()):</span>        
+                <span class="n">insertElement</span><span class="p">(</span> <span class="n">grid</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElemNodes</span><span class="p">(</span><span class="n">iElm</span><span class="p">)</span> <span class="p">,</span> <span class="mi">3</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">)</span>
+              
+            <span class="c1"># -- Write nodedata</span>
+   
+           
+        <span class="n">pvdfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">prefix</span><span class="o">+</span><span class="s2">&quot;.pvd&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+        <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;VTKFile byte_order=&#39;LittleEndian&#39; &quot;</span><span class="p">)</span>
+        <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;type=&#39;Collection&#39; version=&#39;0.1&#39;&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pvdfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  &lt;Collection&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>                      </div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Joris Remmers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples &mdash; Oscar  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Python API Reference" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Oscar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#api-reference">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-examples">Command-Line Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-h5tovtk">Using h5tovtk</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#python-api-examples">Python API Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-file-access">Basic File Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-to-vtu-format">Converting to VTU Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-node-data">Accessing Node Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-element-data">Accessing Element Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing-multiple-cycles">Processing Multiple Cycles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-node-and-element-groups">Working with Node and Element Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extracting-field-data">Extracting Field Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rve-homogenization-examples">RVE Homogenization Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extracting-thermal-properties">Extracting Thermal Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extracting-mechanical-properties">Extracting Mechanical Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-homogenization-workflow">Complete Homogenization Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-examples">Advanced Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#custom-data-analysis">Custom Data Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#batch-processing">Batch Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-file-processing">Parallel File Processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Oscar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<p>This section provides practical examples of using the Oscar package for various tasks.</p>
+<section id="command-line-examples">
+<h2>Command-Line Examples<a class="headerlink" href="#command-line-examples" title="Link to this heading"></a></h2>
+<section id="using-h5tovtk">
+<h3>Using h5tovtk<a class="headerlink" href="#using-h5tovtk" title="Link to this heading"></a></h3>
+<p><strong>Convert all cycles:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>h5tovtk<span class="w"> </span>simulation.h5
+</pre></div>
+</div>
+<p>This converts all time steps in the file.</p>
+<p><strong>Convert a specific cycle:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>h5tovtk<span class="w"> </span>simulation.h5<span class="w"> </span>-c<span class="w"> </span><span class="m">5</span>
+</pre></div>
+</div>
+<p>Converts only cycle number 5 from the simulation.</p>
+<p><strong>Specify custom output prefix:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>h5tovtk<span class="w"> </span>simulation.h5<span class="w"> </span>-p<span class="w"> </span>results
+</pre></div>
+</div>
+<p>Creates output files with the prefix <code class="docutils literal notranslate"><span class="pre">results</span></code> instead of <code class="docutils literal notranslate"><span class="pre">simulation</span></code>.</p>
+<p><strong>Verbose output:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>h5tovtk<span class="w"> </span>simulation.h5<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>Shows detailed progress information during conversion.</p>
+<p><strong>Multi-processor files:</strong></p>
+<p>For simulations run on multiple processors, the files are typically named with a <code class="docutils literal notranslate"><span class="pre">_p#</span></code> suffix
+(e.g., <code class="docutils literal notranslate"><span class="pre">simulation_p0.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">simulation_p1.h5</span></code>, etc.). Simply use the base name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">h5tovtk</span> <span class="n">simulation</span>
+</pre></div>
+</div>
+<p>The tool automatically detects all processor files and creates:</p>
+<ul class="simple">
+<li><p>Individual VTU files for each processor and cycle</p></li>
+<li><p>A combined PVD file for parallel visualization</p></li>
+</ul>
+</section>
+</section>
+<section id="python-api-examples">
+<h2>Python API Examples<a class="headerlink" href="#python-api-examples" title="Link to this heading"></a></h2>
+<section id="basic-file-access">
+<h3>Basic File Access<a class="headerlink" href="#basic-file-access" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="c1"># Open HDF5 file</span>
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get basic information</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total cycles: </span><span class="si">{</span><span class="n">h5file</span><span class="o">.</span><span class="n">cycleCount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total nodes: </span><span class="si">{</span><span class="n">h5file</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total elements: </span><span class="si">{</span><span class="n">h5file</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem dimension: </span><span class="si">{</span><span class="n">h5file</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="converting-to-vtu-format">
+<h3>Converting to VTU Format<a class="headerlink" href="#converting-to-vtu-format" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="c1"># Open HDF5 file</span>
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+
+<span class="c1"># Convert all cycles</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span>
+
+<span class="c1"># Convert specific cycles</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">(</span><span class="n">cycles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># Custom output prefix</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-node-data">
+<h3>Accessing Node Data<a class="headerlink" href="#accessing-node-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="c1"># Open file and set cycle</span>
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Get all node coordinates</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span>
+
+<span class="c1"># Get coordinates for specific node</span>
+<span class="n">node_coord</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getCoords</span><span class="p">(</span><span class="n">nodeID</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Get displacement data for all nodes</span>
+<span class="n">displacements</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;displacement&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get node groups</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeGroupNames</span><span class="p">()</span>
+<span class="n">fixed_nodes</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-element-data">
+<h3>Accessing Element Data<a class="headerlink" href="#accessing-element-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="c1"># Open file and set cycle</span>
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Get element connectivity</span>
+<span class="n">elem_nodes</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemNodes</span><span class="p">(</span><span class="n">elemID</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Get stress data for all elements</span>
+<span class="n">stress</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;stress&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get element groups</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemGroupNames</span><span class="p">()</span>
+<span class="n">boundary_elems</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="processing-multiple-cycles">
+<h3>Processing Multiple Cycles<a class="headerlink" href="#processing-multiple-cycles" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Open the HDF5 file</span>
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Initialize storage for results</span>
+<span class="n">max_displacements</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Iterate through cycles</span>
+<span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h5file</span><span class="o">.</span><span class="n">cycleCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+
+    <span class="c1"># Get node data</span>
+    <span class="n">displacements</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;displacement&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Process data</span>
+    <span class="n">max_disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">displacements</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">max_displacements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_disp</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cycle </span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s2">: Max displacement = </span><span class="si">{</span><span class="n">max_disp</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot or save results</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum displacement overall: </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">max_displacements</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-node-and-element-groups">
+<h3>Working with Node and Element Groups<a class="headerlink" href="#working-with-node-and-element-groups" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># List available groups</span>
+<span class="n">node_groups</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeGroupNames</span><span class="p">()</span>
+<span class="n">elem_groups</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemGroupNames</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node groups: </span><span class="si">{</span><span class="n">node_groups</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element groups: </span><span class="si">{</span><span class="n">elem_groups</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access specific node groups</span>
+<span class="n">fixed_nodes</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="n">loaded_nodes</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of fixed nodes: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fixed_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of loaded nodes: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loaded_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access specific element groups</span>
+<span class="n">boundary_elems</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
+<span class="n">domain_elems</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of boundary elements: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundary_elems</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of domain elements: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">domain_elems</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="extracting-field-data">
+<h3>Extracting Field Data<a class="headerlink" href="#extracting-field-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># List available data fields</span>
+<span class="n">node_fields</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">nodeDataSets</span><span class="p">()</span>
+<span class="n">elem_fields</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">elemDataSets</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available node fields: </span><span class="si">{</span><span class="n">node_fields</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available element fields: </span><span class="si">{</span><span class="n">elem_fields</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Extract specific field data</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
+<span class="n">stress</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;stress&#39;</span><span class="p">)</span>
+<span class="n">strain</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="rve-homogenization-examples">
+<h2>RVE Homogenization Examples<a class="headerlink" href="#rve-homogenization-examples" title="Link to this heading"></a></h2>
+<section id="extracting-thermal-properties">
+<h3>Extracting Thermal Properties<a class="headerlink" href="#extracting-thermal-properties" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar.RVEutils</span> <span class="kn">import</span> <span class="n">getConductivity</span><span class="p">,</span> <span class="n">getCTE</span><span class="p">,</span> <span class="n">getCapacity</span><span class="p">,</span> <span class="n">getDensity</span>
+
+<span class="c1"># Base name for RVE simulation files</span>
+<span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;composite_rve&#39;</span>
+
+<span class="c1"># Get thermal properties</span>
+<span class="n">conductivity</span> <span class="o">=</span> <span class="n">getConductivity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">cte</span> <span class="o">=</span> <span class="n">getCTE</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">capacity</span> <span class="o">=</span> <span class="n">getCapacity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">density</span> <span class="o">=</span> <span class="n">getDensity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Thermal Properties:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Conductivity [W/mK]: </span><span class="si">{</span><span class="n">conductivity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  CTE [1/K]: </span><span class="si">{</span><span class="n">cte</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Specific heat capacity [J/kgK]: </span><span class="si">{</span><span class="n">capacity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Density [kg/m³]: </span><span class="si">{</span><span class="n">density</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="extracting-mechanical-properties">
+<h3>Extracting Mechanical Properties<a class="headerlink" href="#extracting-mechanical-properties" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar.RVEutils</span> <span class="kn">import</span> <span class="n">getMechanical</span>
+
+<span class="c1"># Base name for RVE simulation files</span>
+<span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;composite_rve&#39;</span>
+
+<span class="c1"># Get mechanical properties (assuming 1% strain was applied)</span>
+<span class="n">E</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">getMechanical</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mechanical Properties:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Young&#39;s moduli [GPa]:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    E_x = </span><span class="si">{</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    E_y = </span><span class="si">{</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    E_z = </span><span class="si">{</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Shear moduli [GPa]:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    G_xy = </span><span class="si">{</span><span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    G_xz = </span><span class="si">{</span><span class="n">G</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    G_yz = </span><span class="si">{</span><span class="n">G</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Poisson&#39;s ratios:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    nu_xy = </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    nu_yz = </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    nu_xz = </span><span class="si">{</span><span class="n">nu</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Stiffness matrix</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Stiffness matrix shape: </span><span class="si">{</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stiffness matrix [GPa]:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="complete-homogenization-workflow">
+<h3>Complete Homogenization Workflow<a class="headerlink" href="#complete-homogenization-workflow" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar.RVEutils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c1"># Base name for RVE simulations</span>
+<span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;composite_rve&#39;</span>
+
+<span class="c1"># Extract all properties</span>
+<span class="n">properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;thermal&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;conductivity&#39;</span><span class="p">:</span> <span class="n">getConductivity</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+        <span class="s1">&#39;expansion_coefficient&#39;</span><span class="p">:</span> <span class="n">getCTE</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+        <span class="s1">&#39;specific_heat&#39;</span><span class="p">:</span> <span class="n">getCapacity</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+        <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="n">getDensity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Get mechanical properties</span>
+<span class="n">E</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">getMechanical</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">properties</span><span class="p">[</span><span class="s1">&#39;mechanical&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;youngs_moduli&#39;</span><span class="p">:</span> <span class="n">E</span><span class="p">,</span>
+    <span class="s1">&#39;shear_moduli&#39;</span><span class="p">:</span> <span class="n">G</span><span class="p">,</span>
+    <span class="s1">&#39;poissons_ratios&#39;</span><span class="p">:</span> <span class="n">nu</span><span class="p">,</span>
+    <span class="s1">&#39;stiffness_matrix&#39;</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1"># Save to file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;material_properties.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Material properties saved to material_properties.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-examples">
+<h2>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Link to this heading"></a></h2>
+<section id="custom-data-analysis">
+<h3>Custom Data Analysis<a class="headerlink" href="#custom-data-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+
+<span class="c1"># Track maximum stress over time</span>
+<span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">max_stresses</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h5file</span><span class="o">.</span><span class="n">cycleCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">h5file</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+
+    <span class="c1"># Get stress data</span>
+    <span class="n">stress</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;stress&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Calculate von Mises stress</span>
+    <span class="n">von_mises</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">stress</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">stress</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">stress</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+        <span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">stress</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">))</span>
+
+    <span class="n">max_stress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">von_mises</span><span class="p">)</span>
+    <span class="n">max_stresses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_stress</span><span class="p">)</span>
+    <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+
+<span class="c1"># Plot results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">max_stresses</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Cycle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Maximum von Mises Stress [Pa]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Stress Evolution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;stress_evolution.png&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plot saved to stress_evolution.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-processing">
+<h3>Batch Processing<a class="headerlink" href="#batch-processing" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="c1"># Find all HDF5 files in directory</span>
+<span class="n">h5_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.h5&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">h5_files</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># Convert to VTU</span>
+        <span class="n">h5file</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span>
+
+        <span class="c1"># Extract summary information</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+            <span class="s1">&#39;cycles&#39;</span><span class="p">:</span> <span class="n">h5file</span><span class="o">.</span><span class="n">cycleCount</span><span class="p">,</span>
+            <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="n">h5file</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">(),</span>
+            <span class="s1">&#39;elements&#39;</span><span class="p">:</span> <span class="n">h5file</span><span class="o">.</span><span class="n">elemCount</span><span class="p">(),</span>
+            <span class="s1">&#39;dimension&#39;</span><span class="p">:</span> <span class="n">h5file</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Converted </span><span class="si">{</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;cycles&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> cycles&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mesh: </span><span class="si">{</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> nodes, </span><span class="si">{</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;elements&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> elements&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Batch processing complete!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="parallel-file-processing">
+<h3>Parallel File Processing<a class="headerlink" href="#parallel-file-processing" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span><span class="p">,</span> <span class="n">writePVD</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># Base name for parallel simulation</span>
+<span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;parallel_sim&#39;</span>
+
+<span class="c1"># Detect number of processors</span>
+<span class="n">nProc</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">nProc</span><span class="si">}</span><span class="s1">.h5&#39;</span><span class="p">):</span>
+    <span class="n">nProc</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nProc</span><span class="si">}</span><span class="s2"> processor files&quot;</span><span class="p">)</span>
+
+<span class="c1"># Process each processor file</span>
+<span class="n">all_cycles</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">for</span> <span class="n">iProc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nProc</span><span class="p">):</span>
+    <span class="n">proc_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">iProc</span><span class="si">}</span><span class="s1">.h5&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing processor </span><span class="si">{</span><span class="n">iProc</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+
+    <span class="n">h5file</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="n">proc_file</span><span class="p">)</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">all_cycles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">all_cycles</span> <span class="o">=</span> <span class="n">cycles</span>
+
+<span class="c1"># Create combined PVD file</span>
+<span class="n">writePVD</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">all_cycles</span><span class="p">,</span> <span class="n">nProc</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created combined PVD file: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.pvd&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="Python API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Joris Remmers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Structure &mdash; Oscar  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Oscar documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Oscar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oscar-hdf5-file-format-ndf-rndf">Oscar HDF5 File Format (NDF/RNDF)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-structure-overview">File Structure Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detailed-data-structure">Detailed Data Structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#root-level-attributes">Root Level Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mesh-data-structure">Mesh Data Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#node-and-element-groups">Node and Element Groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#field-data-structure">Field Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-processor-files">Multi-Processor Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-access-pattern">Data Access Pattern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow-diagram">Workflow Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-layout">Memory Layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#type-definitions">Type Definitions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#api-reference">API Reference</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Oscar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Structure</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/about.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-structure">
+<h1>Data Structure<a class="headerlink" href="#data-structure" title="Link to this heading"></a></h1>
+<section id="oscar-hdf5-file-format-ndf-rndf">
+<h2>Oscar HDF5 File Format (NDF/RNDF)<a class="headerlink" href="#oscar-hdf5-file-format-ndf-rndf" title="Link to this heading"></a></h2>
+<p>The oscar package reads HDF5 files in the NDF (Numeric Data Format) or RNDF format.
+This section describes the hierarchical data structure within these files.</p>
+<section id="file-structure-overview">
+<h3>File Structure Overview<a class="headerlink" href="#file-structure-overview" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>simulation.h5 (HDF5 File)
+│
+├── Attributes (File-level metadata)
+│   ├── fileFormat: &quot;RNDF&quot;
+│   ├── version: 1.0+
+│   └── cycleCount: N
+│
+├── nodes (Optional, static mesh)
+│   ├── coordinates: [n_nodes × n_dim] array
+│   └── nodeIDs: [n_nodes] array
+│
+├── elements (Optional, static mesh)
+│   ├── connectivity: [n_connections] flat array
+│   ├── offsets: [n_elements] offset indices
+│   └── elementIDs: [n_elements] array
+│
+├── nodeGroups (Optional)
+│   ├── &lt;group_name_1&gt;: [node_ids] array
+│   ├── &lt;group_name_2&gt;: [node_ids] array
+│   └── ...
+│
+├── elementGroups (Optional)
+│   ├── &lt;group_name_1&gt;: [element_ids] array
+│   ├── &lt;group_name_2&gt;: [element_ids] array
+│   └── ...
+│
+├── cycle1 (First time step)
+│   ├── nodes (Optional, dynamic mesh)
+│   │   ├── coordinates: [n_nodes × n_dim] array
+│   │   └── nodeIDs: [n_nodes] array
+│   │
+│   ├── elements (Optional, dynamic mesh)
+│   │   ├── connectivity: [n_connections] flat array
+│   │   ├── offsets: [n_elements] offset indices
+│   │   └── elementIDs: [n_elements] array
+│   │
+│   ├── nodeGroups (Optional)
+│   │   └── &lt;group_name&gt;: [node_ids] array
+│   │
+│   ├── elementGroups (Optional)
+│   │   └── &lt;group_name&gt;: [element_ids] array
+│   │
+│   ├── NodeData
+│   │   ├── &lt;field_name_1&gt;: [n_nodes × n_components] array
+│   │   ├── &lt;field_name_2&gt;: [n_nodes × n_components] array
+│   │   └── ... (e.g., displacement, velocity, temperature)
+│   │
+│   ├── ElemData
+│   │   ├── &lt;field_name_1&gt;: [n_elements × n_components] array
+│   │   ├── &lt;field_name_2&gt;: [n_elements × n_components] array
+│   │   └── ... (e.g., stress, strain, damage)
+│   │
+│   └── MacroFields (Optional, for RVE homogenization)
+│       ├── &lt;field_name_1&gt;: scalar or array
+│       └── ... (e.g., thermalCond, stresses, density)
+│
+├── cycle2 (Second time step)
+│   └── ... (same structure as cycle1)
+│
+├── cycle3
+│   └── ...
+│
+└── cycleN
+    └── ...
+</pre></div>
+</div>
+</section>
+<section id="detailed-data-structure">
+<h3>Detailed Data Structure<a class="headerlink" href="#detailed-data-structure" title="Link to this heading"></a></h3>
+<section id="root-level-attributes">
+<h4>Root Level Attributes<a class="headerlink" href="#root-level-attributes" title="Link to this heading"></a></h4>
+<p>The HDF5 file contains global attributes that describe the file format and contents:</p>
+<ul class="simple">
+<li><p><strong>fileFormat</strong> (string): Must be “RNDF” for oscar compatibility</p></li>
+<li><p><strong>version</strong> (float): File format version, must be ≥ 1.0</p></li>
+<li><p><strong>cycleCount</strong> (int): Total number of time steps (cycles) in the file</p></li>
+</ul>
+</section>
+<section id="mesh-data-structure">
+<h4>Mesh Data Structure<a class="headerlink" href="#mesh-data-structure" title="Link to this heading"></a></h4>
+<p>Mesh data can be stored at two levels:</p>
+<ol class="arabic simple">
+<li><p><strong>Static Mesh</strong> (root level): Used when the mesh doesn’t change between cycles</p></li>
+<li><p><strong>Dynamic Mesh</strong> (cycle level): Used when the mesh changes with each time step</p></li>
+</ol>
+<p><strong>Nodes Group:</strong></p>
+<ul class="simple">
+<li><p><strong>coordinates</strong>: NumPy array of shape <code class="docutils literal notranslate"><span class="pre">[n_nodes,</span> <span class="pre">n_dim]</span></code> where <code class="docutils literal notranslate"><span class="pre">n_dim</span></code> is 2 or 3</p></li>
+<li><p><strong>nodeIDs</strong>: Array of unique node identifiers</p></li>
+</ul>
+<p><strong>Elements Group:</strong></p>
+<ul class="simple">
+<li><p><strong>connectivity</strong>: Flat array containing all node IDs for all elements</p></li>
+<li><p><strong>offsets</strong>: Array marking where each element’s connectivity ends in the flat array</p></li>
+<li><p><strong>elementIDs</strong>: Array of unique element identifiers</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Element connectivity stored as:</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># Element 0 (quad)</span>
+                <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>  <span class="c1"># Element 1 (quad)</span>
+<span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>             <span class="c1"># Element 0 ends at index 4, Element 1 at 8</span>
+</pre></div>
+</div>
+</section>
+<section id="node-and-element-groups">
+<h4>Node and Element Groups<a class="headerlink" href="#node-and-element-groups" title="Link to this heading"></a></h4>
+<p>Groups provide a way to organize and select subsets of nodes or elements:</p>
+<ul class="simple">
+<li><p><strong>nodeGroups</strong>: Named collections of node IDs (e.g., “fixed”, “loaded”, “boundary”)</p></li>
+<li><p><strong>elementGroups</strong>: Named collections of element IDs (e.g., “domain”, “interface”)</p></li>
+</ul>
+</section>
+<section id="field-data-structure">
+<h4>Field Data Structure<a class="headerlink" href="#field-data-structure" title="Link to this heading"></a></h4>
+<p><strong>NodeData Group:</strong></p>
+<p>Contains field data defined at nodes (e.g., displacements, temperatures):</p>
+<ul class="simple">
+<li><p>Each field is stored as an array of shape <code class="docutils literal notranslate"><span class="pre">[n_nodes,</span> <span class="pre">n_components]</span></code></p></li>
+<li><p>Common fields: “displacement”, “velocity”, “temperature”, “pressure”</p></li>
+</ul>
+<p><strong>ElemData Group:</strong></p>
+<p>Contains field data defined at element integration points:</p>
+<ul class="simple">
+<li><p>Each field is stored as an array of shape <code class="docutils literal notranslate"><span class="pre">[n_elements,</span> <span class="pre">n_components]</span></code></p></li>
+<li><p>Common fields: “stress”, “strain”, “damage”, “plastic_strain”</p></li>
+</ul>
+<p><strong>MacroFields Group (RVE Analysis):</strong></p>
+<p>For Representative Volume Element homogenization:</p>
+<ul class="simple">
+<li><p>Stores effective/homogenized properties</p></li>
+<li><p>Examples: “thermalCond”, “stresses”, “density”, “specificCapac”</p></li>
+<li><p>Can be scalar values or arrays</p></li>
+</ul>
+</section>
+</section>
+<section id="multi-processor-files">
+<h3>Multi-Processor Files<a class="headerlink" href="#multi-processor-files" title="Link to this heading"></a></h3>
+<p>For parallel simulations, data is distributed across multiple files:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>simulation_p0.h5  ← Processor 0 partition
+simulation_p1.h5  ← Processor 1 partition
+simulation_p2.h5  ← Processor 2 partition
+...
+simulation_pN.h5  ← Processor N partition
+</pre></div>
+</div>
+<p>Each file contains the same structure but with a subset of the mesh and data.</p>
+</section>
+<section id="data-access-pattern">
+<h3>Data Access Pattern<a class="headerlink" href="#data-access-pattern" title="Link to this heading"></a></h3>
+<p>The oscar class provides a unified interface to access this hierarchical structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>oscar Object
+│
+├── File Management
+│   ├── prefix: Base filename
+│   ├── cycleCount: Total cycles
+│   └── cycle: Current active cycle
+│
+├── Mesh Access
+│   ├── coordinates: Node positions
+│   ├── elemNodes: Element connectivity
+│   ├── getCoords(nodeID)
+│   └── getElemNodes(elemID)
+│
+├── Group Access
+│   ├── getNodeGroupNames()
+│   ├── getNodeGroup(name)
+│   ├── getElemGroupNames()
+│   └── getElemGroup(name)
+│
+├── Data Access
+│   ├── nodeDataSets()
+│   ├── elemDataSets()
+│   ├── getNodeData(label, nodeID)
+│   ├── getElemData(label, elemID)
+│   └── getMacroFieldData(label)
+│
+└── Export
+    ├── saveAsVTU()
+    ├── saveAsDat()
+    └── saveModes()
+</pre></div>
+</div>
+</section>
+<section id="workflow-diagram">
+<h3>Workflow Diagram<a class="headerlink" href="#workflow-diagram" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────┐
+│   HDF5 File     │
+│  (simulation.h5)│
+└────────┬────────┘
+         │
+         │ open
+         ▼
+┌─────────────────┐
+│  oscar Object   │
+│                 │
+│  setCycle(n)    │◄─── Select time step
+└────────┬────────┘
+         │
+         ├─────► getCoords()          ─► Node coordinates
+         │
+         ├─────► getNodeData(label)   ─► Field data at nodes
+         │
+         ├─────► getElemData(label)   ─► Field data at elements
+         │
+         ├─────► getNodeGroup(name)   ─► Node groups
+         │
+         ├─────► getElemGroup(name)   ─► Element groups
+         │
+         └─────► saveAsVTU()          ─► Export to VTK format
+                 └─► .vtu files
+                 └─► .pvd file
+</pre></div>
+</div>
+</section>
+<section id="memory-layout">
+<h3>Memory Layout<a class="headerlink" href="#memory-layout" title="Link to this heading"></a></h3>
+<p><strong>Efficient Data Storage:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Node Coordinates (2D Example):
+┌──────────┬──────────┐
+│    X     │    Y     │
+├──────────┼──────────┤
+│  0.0     │   0.0    │  ← Node 0
+│  1.0     │   0.0    │  ← Node 1
+│  1.0     │   1.0    │  ← Node 2
+│  0.0     │   1.0    │  ← Node 3
+└──────────┴──────────┘
+
+Element Connectivity (Flat Array):
+┌───┬───┬───┬───┬───┬───┬───┬───┐
+│ 0 │ 1 │ 2 │ 3 │ 1 │ 4 │ 5 │ 2 │
+└───┴───┴───┴───┴───┴───┴───┴───┘
+  └─────────┘   └─────────────┘
+    Element 0      Element 1
+
+Offsets Array:
+┌───┬───┐
+│ 4 │ 8 │  ← Element boundaries
+└───┴───┘
+
+Field Data (Displacement, 2D):
+┌──────────┬──────────┐
+│   U_X    │   U_Y    │
+├──────────┼──────────┤
+│  0.001   │  0.002   │  ← Node 0
+│  0.003   │  0.001   │  ← Node 1
+│  0.004   │  0.005   │  ← Node 2
+└──────────┴──────────┘
+</pre></div>
+</div>
+</section>
+<section id="type-definitions">
+<h3>Type Definitions<a class="headerlink" href="#type-definitions" title="Link to this heading"></a></h3>
+<p>The oscar package uses the following data types:</p>
+<ul class="simple">
+<li><p><strong>Coordinates</strong>: <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">2)</span></code> or <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">3)</span></code></p></li>
+<li><p><strong>Connectivity</strong>: <code class="docutils literal notranslate"><span class="pre">list[list[int]]</span></code> or flat array with offsets</p></li>
+<li><p><strong>Field Data</strong>: <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(n_entities,</span> <span class="pre">n_components)</span></code></p></li>
+<li><p><strong>Node/Element IDs</strong>: <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">list[int]</span></code></p></li>
+<li><p><strong>Groups</strong>: <code class="docutils literal notranslate"><span class="pre">list[int]</span></code> containing entity IDs</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Oscar documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Joris Remmers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python API Reference &mdash; Oscar  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Oscar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html#api-reference">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-module">Core Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#main-functions">Main Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.convertToVTU"><code class="docutils literal notranslate"><span class="pre">convertToVTU()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.writePVD"><code class="docutils literal notranslate"><span class="pre">writePVD()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.PVDfileName"><code class="docutils literal notranslate"><span class="pre">PVDfileName()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utility-functions">Utility Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.apply_rainbow_color_map"><code class="docutils literal notranslate"><span class="pre">apply_rainbow_color_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.versionCheck"><code class="docutils literal notranslate"><span class="pre">versionCheck()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-oscar-class">The oscar Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oscar.oscar.oscar"><code class="docutils literal notranslate"><span class="pre">oscar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.setCycle"><code class="docutils literal notranslate"><span class="pre">oscar.setCycle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getCoords"><code class="docutils literal notranslate"><span class="pre">oscar.getCoords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getCoords3"><code class="docutils literal notranslate"><span class="pre">oscar.getCoords3()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getCycle"><code class="docutils literal notranslate"><span class="pre">oscar.getCycle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemNodes"><code class="docutils literal notranslate"><span class="pre">oscar.getElemNodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemNodeCount"><code class="docutils literal notranslate"><span class="pre">oscar.getElemNodeCount()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemGroupNames"><code class="docutils literal notranslate"><span class="pre">oscar.getElemGroupNames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemGroup"><code class="docutils literal notranslate"><span class="pre">oscar.getElemGroup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.elemCount"><code class="docutils literal notranslate"><span class="pre">oscar.elemCount()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemIndex"><code class="docutils literal notranslate"><span class="pre">oscar.getElemIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemIDs"><code class="docutils literal notranslate"><span class="pre">oscar.getElemIDs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.nodeCount"><code class="docutils literal notranslate"><span class="pre">oscar.nodeCount()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.unpackElements"><code class="docutils literal notranslate"><span class="pre">oscar.unpackElements()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getNodeIndex"><code class="docutils literal notranslate"><span class="pre">oscar.getNodeIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getNodeIDs"><code class="docutils literal notranslate"><span class="pre">oscar.getNodeIDs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getNodeGroupNames"><code class="docutils literal notranslate"><span class="pre">oscar.getNodeGroupNames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getNodeGroup"><code class="docutils literal notranslate"><span class="pre">oscar.getNodeGroup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.rank"><code class="docutils literal notranslate"><span class="pre">oscar.rank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.nodeDataSets"><code class="docutils literal notranslate"><span class="pre">oscar.nodeDataSets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.elemDataSets"><code class="docutils literal notranslate"><span class="pre">oscar.elemDataSets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getDisplacements"><code class="docutils literal notranslate"><span class="pre">oscar.getDisplacements()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getNodeData"><code class="docutils literal notranslate"><span class="pre">oscar.getNodeData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getElemData"><code class="docutils literal notranslate"><span class="pre">oscar.getElemData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.getMacroFieldData"><code class="docutils literal notranslate"><span class="pre">oscar.getMacroFieldData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.particleCount"><code class="docutils literal notranslate"><span class="pre">oscar.particleCount()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.saveAsVTU"><code class="docutils literal notranslate"><span class="pre">oscar.saveAsVTU()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.saveAsDat"><code class="docutils literal notranslate"><span class="pre">oscar.saveAsDat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.oscar.oscar.saveModes"><code class="docutils literal notranslate"><span class="pre">oscar.saveModes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#complete-api-example">Complete API Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rve-utilities-module">RVE Utilities Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getFileName"><code class="docutils literal notranslate"><span class="pre">getFileName()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getConductivity"><code class="docutils literal notranslate"><span class="pre">getConductivity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getCTE"><code class="docutils literal notranslate"><span class="pre">getCTE()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getCapacity"><code class="docutils literal notranslate"><span class="pre">getCapacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getDensity"><code class="docutils literal notranslate"><span class="pre">getDensity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.RVEutils.getMechanical"><code class="docutils literal notranslate"><span class="pre">getMechanical()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-rve-example">Complete RVE Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vtk-utilities-module">VTK Utilities Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oscar.VTKutils.insertElement"><code class="docutils literal notranslate"><span class="pre">insertElement()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Oscar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-api-reference">
+<h1>Python API Reference<a class="headerlink" href="#python-api-reference" title="Link to this heading"></a></h1>
+<p>The oscar package provides a Python API for programmatic access to HDF5 files in the NDF format.
+This documentation is automatically generated from the source code docstrings.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+
+<span class="c1"># Open an HDF5 file</span>
+<span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get basic information</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total cycles: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">cycleCount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total nodes: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total elements: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set active cycle and get data</span>
+<span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span>
+<span class="n">displacements</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;displacement&#39;</span><span class="p">)</span>
+
+<span class="c1"># Export to VTU format</span>
+<span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="core-module">
+<h2>Core Module<a class="headerlink" href="#core-module" title="Link to this heading"></a></h2>
+<section id="main-functions">
+<h3>Main Functions<a class="headerlink" href="#main-functions" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.oscar.convertToVTU">
+<span class="sig-name descname"><span class="pre">convertToVTU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#convertToVTU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.convertToVTU" title="Link to this definition"></a></dt>
+<dd><p>Convert an oscar HDF5 file to VTU format.</p>
+<p>Converts the specified oscar .h5 file to VTU (VTK Unstructured Grid) format.
+The VTU files are written to disk with the pattern fileName_t&lt;cycle&gt;.vtu and
+a PVD file is created for visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> (<em>str</em>) – The name of the h5 file (with or without .h5 extension).</p></li>
+<li><p><strong>cycles</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – List or integer of cycle numbers to convert.
+If -1 (default), all cycles are converted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convert all cycles</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convertToVTU</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convert specific cycles</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convertToVTU</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">,</span> <span class="n">cycles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convert single cycle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convertToVTU</span><span class="p">(</span><span class="s1">&#39;simulation&#39;</span><span class="p">,</span> <span class="n">cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.oscar.writePVD">
+<span class="sig-name descname"><span class="pre">writePVD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nProc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#writePVD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.writePVD" title="Link to this definition"></a></dt>
+<dd><p>Write a ParaView Data (PVD) file for a collection of VTU files.</p>
+<p>Creates a PVD file that references multiple VTU files for time series
+visualization in ParaView. Supports both serial and parallel (multi-processor)
+data files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<em>str</em>) – Prefix for the PVD filename and referenced VTU files.</p></li>
+<li><p><strong>cycles</strong> (<em>list</em>) – List of cycle (timestep) numbers to include.</p></li>
+<li><p><strong>nProc</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of processors. If &gt; 1, includes files from
+multiple processors. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If nProc &lt; 1.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Serial simulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">writePVD</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Parallel simulation with 4 processors</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">writePVD</span><span class="p">(</span><span class="s1">&#39;parallel_results&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">nProc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.oscar.PVDfileName">
+<span class="sig-name descname"><span class="pre">PVDfileName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iCyc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iProc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#PVDfileName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.PVDfileName" title="Link to this definition"></a></dt>
+<dd><p>Generate a VTU filename for use in PVD files.</p>
+<p>Creates a standardized filename for VTU files based on prefix, cycle number,
+and optionally processor number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<em>str</em>) – Filename prefix.</p></li>
+<li><p><strong>iCyc</strong> (<em>int</em>) – Cycle (timestep) number.</p></li>
+<li><p><strong>iProc</strong> (<em>int</em><em>, </em><em>optional</em>) – Processor number. If -1 (default), creates a
+serial filename. Otherwise creates a parallel filename.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted VTU filename.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Serial filename</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PVDfileName</span><span class="p">(</span><span class="s1">&#39;simulation&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">&#39;simulation_t5.vtu&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Parallel filename for processor 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PVDfileName</span><span class="p">(</span><span class="s1">&#39;simulation&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">iProc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">&#39;simulation_p2_t5.vtu&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="utility-functions">
+<h3>Utility Functions<a class="headerlink" href="#utility-functions" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.oscar.apply_rainbow_color_map">
+<span class="sig-name descname"><span class="pre">apply_rainbow_color_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#apply_rainbow_color_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.apply_rainbow_color_map" title="Link to this definition"></a></dt>
+<dd><p>Apply a rainbow color map to a VTK mapper.</p>
+<p>Creates and applies a rainbow-style lookup table that maps scalar values
+from blue to red (hue range 0.0 to 0.8).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mapper</strong> – VTK mapper object to which the color map will be applied.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mapper</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkDataSetMapper</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapper</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">apply_rainbow_color_map</span><span class="p">(</span><span class="n">mapper</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.oscar.versionCheck">
+<span class="sig-name descname"><span class="pre">versionCheck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#versionCheck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.versionCheck" title="Link to this definition"></a></dt>
+<dd><p>Check if the file is a valid oscar HDF5 file.</p>
+<p>Verifies that the file format is ‘RNDF’ and the version is at least 1.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> – HDF5 file object to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If the file format is not ‘RNDF’ or version is less than 1.0.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">h5py</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">versionCheck</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+<section id="the-oscar-class">
+<h2>The oscar Class<a class="headerlink" href="#the-oscar-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="oscar.oscar.oscar">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">oscar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to read and access data in the HDF file format. sdd</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> (<em>str</em>) – filename May be with or without the extension .h5</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – verbose flag.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.setCycle">
+<span class="sig-name descname"><span class="pre">setCycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iCyc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.setCycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.setCycle" title="Link to this definition"></a></dt>
+<dd><p>Set the active cycle for data access.</p>
+<p>Changes the active cycle (timestep) from which data will be read.
+Updates internal data structures to point to the specified cycle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>iCyc</strong> (<em>int</em>) – Cycle ID number to activate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Now all data access is from cycle 5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getCoords">
+<span class="sig-name descname"><span class="pre">getCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getCoords" title="Link to this definition"></a></dt>
+<dd><p>Get the coordinates of specified node(s).</p>
+<p>Retrieves spatial coordinates for one or more nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeID</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Node ID(s) according to internal numbering.
+If -1 (default), returns coordinates of all nodes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Node coordinates. Shape is (n_nodes, n_dimensions) for</dt><dd><p>multiple nodes or (n_dimensions,) for a single node.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get all coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_coords</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get single node coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_coord</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get multiple nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nodes_coord</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getCoords3">
+<span class="sig-name descname"><span class="pre">getCoords3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getCoords3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getCoords3" title="Link to this definition"></a></dt>
+<dd><p>Get node coordinates in 3D format.</p>
+<p>Returns the coordinates always in 3D format, padding with zeros if
+the problem is 2D (rank equals 2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Node coordinates with shape (n_nodes, 3).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 2D problems, z-coordinate will be padded with zeros</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coords_3d</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords3</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">coords_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (n_nodes, 3)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getCycle">
+<span class="sig-name descname"><span class="pre">getCycle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getCycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getCycle" title="Link to this definition"></a></dt>
+<dd><p>Get the current active cycle number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The currently active cycle ID.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCycle</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>  <span class="c1"># 3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemNodes">
+<span class="sig-name descname"><span class="pre">getElemNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elemID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemNodes" title="Link to this definition"></a></dt>
+<dd><p>Get the node connectivity for a specified element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elemID</strong> (<em>int</em>) – Element ID number.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of node IDs that form the element.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemNodes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>  <span class="c1"># [23, 45, 67, 89] for a quad element</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemNodeCount">
+<span class="sig-name descname"><span class="pre">getElemNodeCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elemID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemNodeCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemNodeCount" title="Link to this definition"></a></dt>
+<dd><p>Get the number of nodes in a specified element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elemID</strong> (<em>int</em>) – Element ID number.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of nodes in the element.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n_nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemNodeCount</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)</span>  <span class="c1"># 4 for quad, 8 for hex, etc.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemGroupNames">
+<span class="sig-name descname"><span class="pre">getElemGroupNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemGroupNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemGroupNames" title="Link to this definition"></a></dt>
+<dd><p>Get the names of all element groups in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of element group names as strings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemGroupNames</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>  <span class="c1"># [&#39;domain&#39;, &#39;boundary&#39;, &#39;interface&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemGroup">
+<span class="sig-name descname"><span class="pre">getElemGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemGroup" title="Link to this definition"></a></dt>
+<dd><p>Get element IDs belonging to a specified element group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the element group. If “all” (default),
+returns all element IDs in the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of element IDs in the group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get all elements</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_elems</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get specific group</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boundary_elems</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.elemCount">
+<span class="sig-name descname"><span class="pre">elemCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elemGroup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.elemCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.elemCount" title="Link to this definition"></a></dt>
+<dd><p>Get the number of elements in the dataset or a specific group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elemGroup</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of an element group. If “all” (default),
+returns the total number of elements in the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of elements in the dataset or group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total elements: </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boundary_count</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">elemCount</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemIndex">
+<span class="sig-name descname"><span class="pre">getElemIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elemID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemIndex" title="Link to this definition"></a></dt>
+<dd><p>Get the internal index for a specified element ID.</p>
+<p>Converts an element ID to its internal storage index in the HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elemID</strong> (<em>int</em><em> or </em><em>list</em>) – Element ID or list of element IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Internal index or indices of the element(s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemIndex</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># Internal index for element 100</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemIDs">
+<span class="sig-name descname"><span class="pre">getElemIDs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemIDs" title="Link to this definition"></a></dt>
+<dd><p>Get all element IDs in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of all element IDs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem_ids</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemIDs</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First 5 elements: </span><span class="si">{</span><span class="n">elem_ids</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.nodeCount">
+<span class="sig-name descname"><span class="pre">nodeCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeGroup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.nodeCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.nodeCount" title="Link to this definition"></a></dt>
+<dd><p>Get the number of nodes in the dataset or a specific group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeGroup</strong> (<em>str</em><em>, </em><em>optional</em>) – Node group name. If ‘all’ (default),
+returns the total number of nodes in the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of nodes in the dataset or group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total_nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total nodes: </span><span class="si">{</span><span class="n">total_nodes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fixed_nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">(</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.unpackElements">
+<span class="sig-name descname"><span class="pre">unpackElements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.unpackElements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.unpackElements" title="Link to this definition"></a></dt>
+<dd><p>Unpack element connectivity from flat array using offset indices.</p>
+<p>Converts a flat connectivity array and offset array into a list of
+element connectivity lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>list</em>) – Flat array of node IDs.</p></li>
+<li><p><strong>offsets</strong> (<em>list</em>) – Array of offset indices marking element boundaries.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of element connectivity lists, where each element is</dt><dd><p>a list of node IDs.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">connectivity</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>  <span class="c1"># Two elements with 4 nodes each</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elements</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">unpackElements</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">offsets</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>  <span class="c1"># [[0, 1, 2, 3], [3, 4, 5, 6]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getNodeIndex">
+<span class="sig-name descname"><span class="pre">getNodeIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getNodeIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getNodeIndex" title="Link to this definition"></a></dt>
+<dd><p>Get the internal index for a specified node ID.</p>
+<p>Converts a node ID to its internal storage index in the HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeID</strong> (<em>int</em><em> or </em><em>list</em>) – The node ID. Can be an integer or a list.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Internal index of the node.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeIndex</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># Internal index for node 250</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getNodeIDs">
+<span class="sig-name descname"><span class="pre">getNodeIDs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getNodeIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getNodeIDs" title="Link to this definition"></a></dt>
+<dd><p>Get all node IDs in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of all node IDs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_ids</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeIDs</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First 10 nodes: </span><span class="si">{</span><span class="n">node_ids</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getNodeGroupNames">
+<span class="sig-name descname"><span class="pre">getNodeGroupNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getNodeGroupNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getNodeGroupNames" title="Link to this definition"></a></dt>
+<dd><p>Get the names of all node groups in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of node group names.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeGroupNames</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>  <span class="c1"># [&#39;fixed&#39;, &#39;loaded&#39;, &#39;free&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getNodeGroup">
+<span class="sig-name descname"><span class="pre">getNodeGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getNodeGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getNodeGroup" title="Link to this definition"></a></dt>
+<dd><p>Get node IDs belonging to a specified node group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the node group.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of node IDs in the group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fixed_nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fixed nodes: </span><span class="si">{</span><span class="n">fixed_nodes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.rank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.rank" title="Link to this definition"></a></dt>
+<dd><p>Get the spatial dimension of the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of spatial dimensions (2 for 2D, 3 for 3D).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dim</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem dimension: </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.nodeDataSets">
+<span class="sig-name descname"><span class="pre">nodeDataSets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.nodeDataSets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.nodeDataSets" title="Link to this definition"></a></dt>
+<dd><p>Get the names of all available node data fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of node data field names (e.g., ‘displacements’, ‘S22’).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datasets</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeDataSets</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>  <span class="c1"># [&#39;displacements&#39;, &#39;S11&#39;, &#39;S22&#39;, &#39;S12&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.elemDataSets">
+<span class="sig-name descname"><span class="pre">elemDataSets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.elemDataSets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.elemDataSets" title="Link to this definition"></a></dt>
+<dd><p>Get the names of all available element data fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of element data field names, or empty list if none exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datasets</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">elemDataSets</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>  <span class="c1"># [&#39;stress&#39;, &#39;strain&#39;, &#39;damage&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getDisplacements">
+<span class="sig-name descname"><span class="pre">getDisplacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getDisplacements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getDisplacements" title="Link to this definition"></a></dt>
+<dd><p>Get displacement values for specified node(s).</p>
+<p>Convenience method that calls getNodeData with label=’displacements’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeID</strong> (<em>int</em><em> or </em><em>list</em>) – Node number(s). Can be an integer, list, or -1
+for all nodes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Displacement values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get all displacements</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_disp</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getDisplacements</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get single node displacement</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_disp</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getDisplacements</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">node_disp</span><span class="p">)</span>  <span class="c1"># [0.001, -0.002]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getNodeData">
+<span class="sig-name descname"><span class="pre">getNodeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getNodeData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getNodeData" title="Link to this definition"></a></dt>
+<dd><p>Get data values for specified node(s) from a named dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – Name of the node dataset (e.g., ‘displacements’, ‘S22’).</p></li>
+<li><p><strong>nodeID</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Node number(s). Can be an integer,
+list, or -1 (default) for all nodes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Data values. For scalar data, shape is (n_nodes,) or scalar.</dt><dd><p>For vector data, shape is (n_nodes, n_components) or (n_components,).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get stress S22 for all nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stress</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;S22&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get displacement for specific nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">disp</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;displacements&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getElemData">
+<span class="sig-name descname"><span class="pre">getElemData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elemID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getElemData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getElemData" title="Link to this definition"></a></dt>
+<dd><p>Get data values for specified element(s) from a named dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – Name of the element dataset.</p></li>
+<li><p><strong>elemID</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Element number(s). Can be an integer,
+list, or -1 (default) for all elements.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Data values. For scalar data, shape is (n_elements,) or scalar.</dt><dd><p>For vector data, shape is (n_elements, n_components) or (n_components,).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get strain for all elements</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strain</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get damage for specific element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">damage</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;damage&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.getMacroFieldData">
+<span class="sig-name descname"><span class="pre">getMacroFieldData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.getMacroFieldData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.getMacroFieldData" title="Link to this definition"></a></dt>
+<dd><p>Get macroscopic field data for a specified label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – Name of the macrofield dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Macrofield data values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">macro_stress</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s1">&#39;stress&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">macro_stress</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.particleCount">
+<span class="sig-name descname"><span class="pre">particleCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particleGroup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.particleCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.particleCount" title="Link to this definition"></a></dt>
+<dd><p>Get the number of particles in the dataset or a specific group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>particleGroup</strong> (<em>str</em><em>, </em><em>optional</em>) – Particle group name. If ‘all’ (default),
+returns the total number of particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of particles in the dataset or group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total_particles</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">particleCount</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">active_particles</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">particleCount</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.saveAsVTU">
+<span class="sig-name descname"><span class="pre">saveAsVTU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.saveAsVTU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.saveAsVTU" title="Link to this definition"></a></dt>
+<dd><p>Export data to VTK Unstructured Grid (VTU) format.</p>
+<p>Creates VTU files for visualization in ParaView or other VTK-compatible
+software. Also generates a PVD file for time series visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – Prefix for output filenames. If ‘None’ (default),
+uses the prefix of the original HDF5 file.</p></li>
+<li><p><strong>cycles</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Cycle number(s) to export. Can be an
+integer, list, or -1 (default) to export all cycles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of cycle numbers that were exported.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export all cycles</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export specific cycles with custom prefix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="n">cycles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export single cycle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">(</span><span class="n">cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.saveAsDat">
+<span class="sig-name descname"><span class="pre">saveAsDat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dawn'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.saveAsDat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.saveAsDat" title="Link to this definition"></a></dt>
+<dd><p>Export data to Dawn DAT format.</p>
+<p>Creates a text-based DAT file containing mesh and simulation data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> (<em>str</em><em>, </em><em>optional</em>) – Output filename. If ‘None’ (default), uses
+the prefix of the HDF5 file. Extension .dat is added if not present.</p></li>
+<li><p><strong>cycle</strong> (<em>int</em><em>, </em><em>optional</em>) – Cycle number to export. If -1 (default),
+exports undeformed configuration from cycle 1.</p></li>
+<li><p><strong>output</strong> (<em>str</em><em>, </em><em>optional</em>) – Output format type. Either ‘dawn’ or ‘pyfem’.
+Default is ‘dawn’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export undeformed mesh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsDat</span><span class="p">(</span><span class="s1">&#39;mesh.dat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export deformed configuration at cycle 10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsDat</span><span class="p">(</span><span class="s1">&#39;deformed.dat&#39;</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Export in PyFEM format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsDat</span><span class="p">(</span><span class="s1">&#39;model.dat&#39;</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;pyfem&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oscar.oscar.oscar.saveModes">
+<span class="sig-name descname"><span class="pre">saveModes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/oscar/oscar.html#oscar.saveModes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.oscar.oscar.saveModes" title="Link to this definition"></a></dt>
+<dd><p>Export mode shapes to VTU format.</p>
+<p>Creates VTU files for visualization of mode shapes (e.g., from modal analysis).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – Prefix for output filenames. If ‘None’ (default),
+uses the prefix of the original HDF5 file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method appears to be incomplete in the implementation.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;modal_analysis.h5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oscarFile</span><span class="o">.</span><span class="n">saveModes</span><span class="p">(</span><span class="s1">&#39;modes&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Creates modes-1.vtu, modes-2.vtu, etc.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="complete-api-example">
+<h2>Complete API Example<a class="headerlink" href="#complete-api-example" title="Link to this heading"></a></h2>
+<p>Here’s a complete example demonstrating common API usage patterns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Open the HDF5 file</span>
+<span class="n">oscarFile</span> <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span><span class="s1">&#39;simulation.h5&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Get basic information</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total cycles: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">cycleCount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total nodes: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total elements: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">elemCount</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem dimension: </span><span class="si">{</span><span class="n">oscarFile</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+
+<span class="c1"># Iterate through cycles</span>
+<span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">cycleCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">oscarFile</span><span class="o">.</span><span class="n">setCycle</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
+
+    <span class="c1"># Get node data</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span>
+    <span class="n">displacements</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeData</span><span class="p">(</span><span class="s1">&#39;displacement&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Get element data</span>
+    <span class="n">stress</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemData</span><span class="p">(</span><span class="s1">&#39;stress&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Process data</span>
+    <span class="n">max_disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">displacements</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cycle </span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s2">: Max displacement = </span><span class="si">{</span><span class="n">max_disp</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access specific node groups</span>
+<span class="n">fixed_nodes</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getNodeGroup</span><span class="p">(</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of fixed nodes: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fixed_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access element groups</span>
+<span class="n">boundary_elems</span> <span class="o">=</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">getElemGroup</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of boundary elements: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundary_elems</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># List available data fields</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available node fields:&quot;</span><span class="p">,</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">nodeDataSets</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available element fields:&quot;</span><span class="p">,</span> <span class="n">oscarFile</span><span class="o">.</span><span class="n">elemDataSets</span><span class="p">())</span>
+
+<span class="c1"># Export to VTU for visualization</span>
+<span class="n">oscarFile</span><span class="o">.</span><span class="n">saveAsVTU</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported to VTU format&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="rve-utilities-module">
+<h2>RVE Utilities Module<a class="headerlink" href="#rve-utilities-module" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">RVEutils</span></code> module provides utilities for Representative Volume Element (RVE)
+homogenization analysis to extract effective material properties.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar.RVEutils</span> <span class="kn">import</span> <span class="n">getConductivity</span><span class="p">,</span> <span class="n">getMechanical</span><span class="p">,</span> <span class="n">getCTE</span>
+</pre></div>
+</div>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getFileName">
+<span class="sig-name descname"><span class="pre">getFileName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getFileName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getFileName" title="Link to this definition"></a></dt>
+<dd><p>Returns the filename in HDF5 format with proper prefix and extension.</p>
+<p>Constructs a filename by adding an optional prefix and ensuring the .h5
+extension is present. If a prefix is provided and the name doesn’t start
+with it, the prefix is prepended with an underscore separator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Base name of the HDF5 file (oscar format)</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – Prefix to prepend to the filename. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted filename with prefix and .h5 extension</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">getFileName</span><span class="p">(</span><span class="s2">&quot;mydata&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span>
+<span class="go">&quot;sim_mydata.h5&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getConductivity">
+<span class="sig-name descname"><span class="pre">getConductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">props</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getConductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getConductivity" title="Link to this definition"></a></dt>
+<dd><p>Returns the thermal conductivity tensor components from RVE simulations.</p>
+<p>Reads thermal conductivity data from three separate HDF5 files (one for each
+direction) and returns the conductivity components as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baseName</strong> (<em>str</em>) – Base name of the HDF5 files (oscar format)</p></li>
+<li><p><strong>props</strong> (<em>str</em><em>, </em><em>optional</em>) – Additional properties parameter. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Thermal conductivity components [k_x, k_y, k_z]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Expects files named “cond_{baseName}_0.h5”, “cond_{baseName}_1.h5”,
+and “cond_{baseName}_2.h5” to exist.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getCTE">
+<span class="sig-name descname"><span class="pre">getCTE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getCTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getCTE" title="Link to this definition"></a></dt>
+<dd><p>Returns the coefficients of thermal expansion (CTE) as an array.</p>
+<p>Reads thermal expansion coefficients from an HDF5 file containing
+RVE homogenization results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>baseName</strong> (<em>str</em>) – Base name of the HDF5 file (oscar format)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Coefficients of thermal expansion as a list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Expects a file named “cte_{baseName}.h5” to exist with macro field
+data for “thermalExpansion”.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getCapacity">
+<span class="sig-name descname"><span class="pre">getCapacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getCapacity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getCapacity" title="Link to this definition"></a></dt>
+<dd><p>Returns the specific heat capacity from RVE homogenization.</p>
+<p>Reads the volumetric average specific heat capacity from an HDF5 file
+containing homogenized thermal properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>baseName</strong> (<em>str</em>) – Base name of the HDF5 file (oscar format)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Specific heat capacity value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Expects a file named “capac_{baseName}.h5” to exist with macro field
+data for “specificCapac”.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getDensity">
+<span class="sig-name descname"><span class="pre">getDensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getDensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getDensity" title="Link to this definition"></a></dt>
+<dd><p>Returns the effective density from RVE homogenization.</p>
+<p>Reads the volumetric average density from an HDF5 file containing
+homogenized material properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>baseName</strong> (<em>str</em>) – Base name of the HDF5 file (oscar format)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Density value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Expects a file named “capac_{baseName}.h5” to exist with macro field
+data for “density”.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.RVEutils.getMechanical">
+<span class="sig-name descname"><span class="pre">getMechanical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/oscar/RVEutils.html#getMechanical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.RVEutils.getMechanical" title="Link to this definition"></a></dt>
+<dd><p>Returns the mechanical properties from RVE homogenization analysis.</p>
+<p>Computes effective mechanical properties (Young’s moduli, shear moduli,
+Poisson’s ratios, and stiffness matrix) by collecting stress responses
+from six load cases corresponding to unit strains in each direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baseName</strong> (<em>str</em>) – Base name of the HDF5 files (oscar format)</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – Strain magnitude used in the simulations. Defaults to 0.01.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>E (list): Young’s moduli [E_x, E_y, E_z]</p></li>
+<li><p>G (list): Shear moduli [G_xy, G_xz, G_yz]</p></li>
+<li><p>nu (list): Poisson’s ratios [nu_xy, nu_yz, nu_xz]</p></li>
+<li><p>cmat (numpy.ndarray): 6x6 stiffness matrix</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Expects files named “mech_{baseName}_0.h5” through “mech_{baseName}_5.h5”
+corresponding to six independent strain states.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="complete-rve-example">
+<h3>Complete RVE Example<a class="headerlink" href="#complete-rve-example" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">oscar.RVEutils</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Base name for RVE simulations</span>
+<span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;composite_rve&#39;</span>
+
+<span class="c1"># Get thermal properties</span>
+<span class="n">conductivity</span> <span class="o">=</span> <span class="n">getConductivity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">cte</span> <span class="o">=</span> <span class="n">getCTE</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">capacity</span> <span class="o">=</span> <span class="n">getCapacity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+<span class="n">density</span> <span class="o">=</span> <span class="n">getDensity</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Thermal Properties:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Conductivity: </span><span class="si">{</span><span class="n">conductivity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  CTE: </span><span class="si">{</span><span class="n">cte</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Capacity: </span><span class="si">{</span><span class="n">capacity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Density: </span><span class="si">{</span><span class="n">density</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get mechanical properties</span>
+<span class="n">E</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">getMechanical</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mechanical Properties:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Young&#39;s moduli: </span><span class="si">{</span><span class="n">E</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Shear moduli: </span><span class="si">{</span><span class="n">G</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Poisson&#39;s ratios: </span><span class="si">{</span><span class="n">nu</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Stiffness matrix shape: </span><span class="si">{</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="vtk-utilities-module">
+<h2>VTK Utilities Module<a class="headerlink" href="#vtk-utilities-module" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VTKutils</span></code> module provides utilities for working with VTK data structures.</p>
+<section id="id1">
+<h3>Functions<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="oscar.VTKutils.insertElement">
+<span class="sig-name descname"><span class="pre">insertElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elemNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/oscar/VTKutils.html#insertElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oscar.VTKutils.insertElement" title="Link to this definition"></a></dt>
+<dd><p>Inserts an element</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Joris Remmers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
