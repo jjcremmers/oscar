@@ -75,7 +75,7 @@ def insertElement( grid , elemNodes : list , rank : int ,
                 grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )               
             elif nNod == 16:
                 cell = vtk.vtkHexahedron()
-                setCellNodes( cell , numpy.concatenate(elemNodes[0:8:2],elemNodes[8:16:2] ) ) 
+                setCellNodes( cell , np.concatenate(elemNodes[0:8:2],elemNodes[8:16:2] ) ) 
                 grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )                         
             elif strict:
                 raise NotImplementedError('Only 4, 5, 6, 8 and 16 node continuum elements in 3D.')             
