@@ -13,6 +13,8 @@ import numpy as np
     
 from .VTKutils import insertElement
 
+familyNames = ["continuum", "interface", "surface", "beam", "shell"]
+
 def apply_rainbow_color_map(mapper):
     """Apply a rainbow color map to a VTK mapper.
     
@@ -286,18 +288,22 @@ class oscar():
             self.cycle = 1
             self.data = self.f["cycle1"]
       
-        if self.f.attrs['version'] < 1.0:
-            print("Error2")
-            raise RuntimeError  
+        if 'version' in self.f.attrs.keys():
+            if self.f.attrs['version'] < 1.0:
+                print("Error2")
+                raise RuntimeError  
       
         self.cycleCount = self.f.attrs['cycleCount']   
         
         if 'elements' in self.f.keys():
-            connectivity = self.f['elements']['connectivity'][:]
-            offsets      = self.f['elements']['offsets'][:]
-                    
-            self.elemNodes = self.unpackElements( connectivity , offsets )
-            
+            self.connectivity = self.f['elements']['connectivity'][:]
+            self.offsets      = self.f['elements']['offsets'][:]
+
+            if 'familyIDs' in self.f['elements'].keys():
+                self.familyIDs = self.f['elements']['familyIDs'][:]
+            else:
+                self.familyIDs = np.zeros(len(self.offsets), dtype=int)
+                                
         if 'nodes' in self.f.keys():
             self.coordinates  = self.f['nodes']['coordinates']                  
 
@@ -349,11 +355,9 @@ class oscar():
         self.data = self.f["cycle"+str(self.cycle)]
         
         if 'elements' in self.data.keys():
-            connectivity = self.data['elements']['connectivity'][:]
-            offsets      = self.data['elements']['offsets'][:]
-            
-            self.elemNodes = self.unpackElements( connectivity , offsets )            
-                        
+            self.connectivity = self.data['elements']['connectivity'][:]
+            self.offsets      = self.data['elements']['offsets'][:]
+                                    
         if 'nodes' in self.data.keys():
             self.coordinates  = self.data['nodes']['coordinates']                  
 
@@ -460,14 +464,14 @@ class oscar():
             >>> print(nodes)  # [23, 45, 67, 89] for a quad element
         """
    
-        '''
         if elemID == 0:
-            return self.connectivity[0:self.offsets[elemID]]
+            start = 0
         else:
-            return self.connectivity[self.offsets[elemID-1]:self.offsets[elemID]]  
-        '''
-        
-        return self.elemNodes[elemID]            
+            start = self.offsets[elemID - 1]
+
+        end = self.offsets[elemID]
+
+        return self.connectivity[start:end]           
 
 #-------------------------------------------------------------------------------
 #  getElemNodeCount
@@ -488,7 +492,10 @@ class oscar():
             >>> print(n_nodes)  # 4 for quad, 8 for hex, etc.
         """
     
-        return len(self.elemNodes[elemID])
+        if elemID == 0:
+            return self.offsets[0]
+        
+        return self.offsets[elemID] - self.offsets[elemID - 1]
 
 #-------------------------------------------------------------------------------
 #  getElemGroupNames
@@ -564,7 +571,7 @@ class oscar():
         """
     
         if elemGroup == 'all':
-            return len(self.elemNodes)
+            return len(self.offsets)
         else:
             return len(self.getElemGroup(elemGroup))
 
@@ -653,36 +660,6 @@ class oscar():
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
-
-    def unpackElements( self , a : list , offsets : list ) -> list:
-        """Unpack element connectivity from flat array using offset indices.
-        
-        Converts a flat connectivity array and offset array into a list of
-        element connectivity lists.
-        
-        Args:
-            a (list): Flat array of node IDs.
-            offsets (list): Array of offset indices marking element boundaries.
-            
-        Returns:
-            list: List of element connectivity lists, where each element is
-                a list of node IDs.
-                
-        Examples:
-            >>> oscarFile = oscar('simulation.h5')
-            >>> connectivity = [0, 1, 2, 3, 3, 4, 5, 6]
-            >>> offsets = [4, 8]  # Two elements with 4 nodes each
-            >>> elements = oscarFile.unpackElements(connectivity, offsets)
-            >>> print(elements)  # [[0, 1, 2, 3], [3, 4, 5, 6]]
-        """
-        elemNodes = [None] * len(offsets)
-        
-        elemNodes[0] = a[0:offsets[0]]
-
-        for i, (start, end) in enumerate(zip(offsets[:-1], offsets[1:]), 1):
-            elemNodes[i] = a[start:end]
-            
-        return elemNodes
       
 #-------------------------------------------------------------------------------
 #
@@ -1035,6 +1012,8 @@ class oscar():
       
         for iCyc in cycles:
             self.setCycle( iCyc )
+           
+            elemCount = 5*[0]
 
             writer = vtk.vtkXMLUnstructuredGridWriter()
   
@@ -1058,16 +1037,17 @@ class oscar():
             grid.SetPoints(points)    
     
             #--Store elements-----------------------------
-     
-            for elemNodes in self.elemNodes:  
+            family = 0
+
+            for elemID in np.arange(self.elemCount()):                 
+                insertElement( grid , self.getElemNodes( elemID ) , self.rank() , family )
+
+                elemCount[family] += 1
+
+            for ec,name in zip(elemCount,familyNames):
+                if ec > 0:
+                    print(f"Stored {ec:d} {name:s} elements")
             
-                tt = 0
-            
-                if len(elemNodes) < 8:
-                    tt = 2
-                    
-                insertElement( grid , elemNodes , self.rank() , tt )
-              
             # -- Write nodedata
   
             labels = self.nodeDataSets()
@@ -1262,8 +1242,9 @@ class oscar():
                 datFile.write("  %d" %elemID )
                 elemNodes = self.getElemNodes(elemID)
       
-            for iNod in elemNodes:
-                datFile.write("  %d" %iNod )
+                for iNod in elemNodes:
+                    datFile.write("  %d" %iNod )
+
             datFile.write(" ;\n")       
     
         elif output == 'pyfem':    
@@ -1279,9 +1260,9 @@ class oscar():
                 datFile.write("  %d %s" %(k,grp) )
                 elemNodes = self.getElemNodes(elemID)
       
-            for iNod in elemNodes:
-                datFile.write("  %d" %iNod )
-                datFile.write(" ;\n")      
+                for iNod in elemNodes:
+                    datFile.write("  %d" %iNod )
+                    datFile.write(" ;\n")      
           
                 k = k+1
         else:
@@ -1376,8 +1357,8 @@ class oscar():
     
             #--Store elements-----------------------------
      
-            for iElm in range(self.elemCount()):        
-                insertElement( grid , self.getElemNodes(iElm) , 3 , 0 )
+            for elemID in range(self.elemCount()):        
+                insertElement( grid , self.getElemNodes(elemID) , 3 , 0 )
               
             # -- Write nodedata
    

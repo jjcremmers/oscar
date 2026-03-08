@@ -29,7 +29,7 @@ def insertElement( grid , elemNodes : list , rank : int ,
     '''
     Inserts an element 
     '''
-  
+
     nNod = len(elemNodes)
   
     if family == 0:   # Continuum
@@ -114,8 +114,8 @@ def insertElement( grid , elemNodes : list , rank : int ,
                 cell = vtk.vtkLine() 
                 setCellNodes( cell , elemNodes )  
                 grid.InsertNextCell( cell.GetCellType(),cell.GetPointIds() )        
-            else:
-                raise NotImplementedError('Only 2 node surface elements in 2D.')              
+            #else:
+            #    raise NotImplementedError('Only 2 node surface elements in 2D.')              
         elif rank == 3:
             if nNod == 3:
                 cell = vtk.vtkTriangle() 
