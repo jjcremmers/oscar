@@ -357,6 +357,11 @@ class oscar():
         if 'elements' in self.data.keys():
             self.connectivity = self.data['elements']['connectivity'][:]
             self.offsets      = self.data['elements']['offsets'][:]
+
+            if 'familyIDs' in self.data['elements'].keys():
+                self.familyIDs = self.data['elements']['familyIDs'][:]
+            else:
+                self.familyIDs = np.zeros(len(self.offsets), dtype=int)
                                     
         if 'nodes' in self.data.keys():
             self.coordinates  = self.data['nodes']['coordinates']                  
@@ -1013,7 +1018,7 @@ class oscar():
         for iCyc in cycles:
             self.setCycle( iCyc )
            
-            elemCount = 5*[0]
+            elemCount = len(familyNames)*[0]
 
             writer = vtk.vtkXMLUnstructuredGridWriter()
   
@@ -1037,12 +1042,12 @@ class oscar():
             grid.SetPoints(points)    
     
             #--Store elements-----------------------------
-            family = 0
 
-            for elemID in np.arange(self.elemCount()):                 
-                insertElement( grid , self.getElemNodes( elemID ) , self.rank() , family )
-
-                elemCount[family] += 1
+            for elemID in np.arange(self.elemCount()):        
+                family = self.familyIDs[ elemID ]
+                if family < len(elemCount):
+                    insertElement( grid , self.getElemNodes( elemID ) , self.rank() , family )
+                    elemCount[family] += 1
 
             for ec,name in zip(elemCount,familyNames):
                 if ec > 0:
@@ -1061,18 +1066,18 @@ class oscar():
                             newdata[:,:-1] = data
                             data = newdata
              												
-                        d = vtk.vtkDoubleArray();
-                        d.SetName( label );
-                        d.SetNumberOfComponents(data.shape[1]);
+                        d = vtk.vtkDoubleArray()
+                        d.SetName( label )
+                        d.SetNumberOfComponents(data.shape[1])
                 				
                         for i,line in enumerate(data):
                             for j,l in enumerate(line):
                                 d.InsertComponent( i , j , l )
                 				        
                 else:
-                    d = vtk.vtkDoubleArray();
-                    d.SetName( label );
-                    d.SetNumberOfComponents(1);
+                    d = vtk.vtkDoubleArray()
+                    d.SetName( label )
+                    d.SetNumberOfComponents(1)
                     
                     for i,l in enumerate(data):
                         d.InsertComponent( i , 0 , l )
@@ -1086,9 +1091,9 @@ class oscar():
             for label in labels:
                 data = self.getElemData( label )
              
-                d = vtk.vtkDoubleArray();
-                d.SetName( label );
-                d.SetNumberOfComponents(1);
+                d = vtk.vtkDoubleArray()
+                d.SetName( label )
+                d.SetNumberOfComponents(1)
             
                 for i,l in enumerate(data):        
                     d.InsertComponent( i , 0 , l )
