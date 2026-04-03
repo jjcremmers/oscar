@@ -61,6 +61,11 @@ Examples:
                         type=str,
                         default='None',
                         help='Output prefix for VTU files (default: use input filename)')
+
+    parser.add_argument('-g', '--group',
+                        type=str,
+                        default='all',
+                        help='Element group to export (default: all elements)')
     
     parser.add_argument('-v', '--verbose', 
                         help='Increase output verbosity',
@@ -105,11 +110,14 @@ Examples:
             if args.cycle == -1:
                 if args.verbose:
                     print(f"Converting all cycles ({h5file.cycleCount} total)")
-                cycles = h5file.saveAsVTU(prefix=args.prefix)
+                cycles = h5file.saveAsVTU(prefix=args.prefix,
+                                          elemGroup=args.group)
             else:
                 if args.verbose:
                     print(f"Converting cycle {args.cycle}")
-                cycles = h5file.saveAsVTU(prefix=args.prefix, cycles=[args.cycle])
+                cycles = h5file.saveAsVTU(prefix=args.prefix,
+                                          cycles=[args.cycle],
+                                          elemGroup=args.group)
             
             if args.verbose:
                 print(f"Successfully converted {len(cycles)} cycle(s)")
@@ -126,9 +134,10 @@ Examples:
                 h5file = oscar(proc_file)
                 
                 if args.cycle == -1:
-                    cycles = h5file.saveAsVTU()
+                    cycles = h5file.saveAsVTU(elemGroup=args.group)
                 else:
-                    cycles = h5file.saveAsVTU(cycles=[args.cycle])
+                    cycles = h5file.saveAsVTU(cycles=[args.cycle],
+                                              elemGroup=args.group)
                 
                 if all_cycles is None:
                     all_cycles = cycles

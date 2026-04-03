@@ -33,6 +33,16 @@ Converts only cycle number 5 from the simulation.
 
 Creates output files with the prefix ``results`` instead of ``simulation``.
 
+**Export only one element group:**
+
+.. code-block:: bash
+
+    h5tovtk simulation.h5 -g boundary
+
+Exports only the cells in the ``boundary`` element group. The resulting VTU file
+still contains the full node set, which can be useful for comparing subsets in
+ParaView without renumbering points.
+
 **Verbose output:**
 
 .. code-block:: bash
@@ -90,6 +100,12 @@ Converting to VTU Format
     
     # Custom output prefix
     h5file.saveAsVTU(prefix='results')
+
+    # Export only a single element group
+    h5file.saveAsVTU(prefix='boundary', elemGroup='boundary')
+
+The ``elemGroup`` argument filters only the exported elements. All nodes and
+node-based datasets are still written to the VTU file.
 
 Accessing Node Data
 ~~~~~~~~~~~~~~~~~~~
@@ -193,9 +209,11 @@ Working with Node and Element Groups
     # Access specific element groups
     boundary_elems = h5file.getElemGroup('boundary')
     domain_elems = h5file.getElemGroup('domain')
+    missing_elems = h5file.getElemGroup('does-not-exist')
     
     print(f"Number of boundary elements: {len(boundary_elems)}")
     print(f"Number of domain elements: {len(domain_elems)}")
+    print(f"Missing groups return: {missing_elems}")
 
 Extracting Field Data
 ~~~~~~~~~~~~~~~~~~~~~~

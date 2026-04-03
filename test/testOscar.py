@@ -9,6 +9,7 @@ import os
 import tempfile
 import shutil
 import numpy as np
+import vtk
 from oscar.oscar import oscar, convertToVTU, convertToDat, writePVD, PVDfileName
 
   
@@ -309,6 +310,31 @@ class FileConversionTesting(unittest.TestCase):
                                   f"VTU file for cycle {cycle} not found")
             finally:
                 os.chdir(original_dir)
+
+    def test_convertToVTU_element_group(self):
+        """Test converting only a specific element group to VTU"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            original_dir = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+                h5file = oscar(self.test_file)
+                group_names = h5file.getElemGroupNames()
+
+                if not group_names:
+                    self.skipTest("No element groups available in test file")
+
+                elem_group = group_names[0]
+                expected_count = h5file.elemCount(elem_group)
+
+                convertToVTU(self.test_file, cycles=1, elemGroup=elem_group)
+
+                reader = vtk.vtkXMLUnstructuredGridReader()
+                reader.SetFileName("pinched8_reduced_t1.vtu")
+                reader.Update()
+
+                self.assertEqual(reader.GetOutput().GetNumberOfCells(), expected_count)
+            finally:
+                os.chdir(original_dir)
     
     def test_convertToDat_default(self):
         """Test converting to DAT format with defaults"""
@@ -376,6 +402,29 @@ class SaveMethodsTesting(unittest.TestCase):
             
             pvd_file = "custom.pvd"
             self.assertTrue(os.path.exists(pvd_file))
+        finally:
+            os.chdir(original_dir)
+
+    def test_saveAsVTU_element_group(self):
+        """Test saving as VTU for a specific element group"""
+        group_names = self.h5file.getElemGroupNames()
+
+        if not group_names:
+            self.skipTest("No element groups available in test file")
+
+        original_dir = os.getcwd()
+        try:
+            os.chdir(self.temp_dir)
+            elem_group = group_names[0]
+            expected_count = self.h5file.elemCount(elem_group)
+
+            self.h5file.saveAsVTU(prefix="group_only", cycles=1, elemGroup=elem_group)
+
+            reader = vtk.vtkXMLUnstructuredGridReader()
+            reader.SetFileName("group_only_t1.vtu")
+            reader.Update()
+
+            self.assertEqual(reader.GetOutput().GetNumberOfCells(), expected_count)
         finally:
             os.chdir(original_dir)
     

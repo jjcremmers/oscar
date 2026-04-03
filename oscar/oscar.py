@@ -77,7 +77,7 @@ def versionCheck( f ):
 #  convertToVTU
 #-------------------------------------------------------------------------------
 
-def convertToVTU( fileName , cycles = -1 ):
+def convertToVTU( fileName , cycles = -1 , elemGroup : str = 'all' ):
     """Convert an oscar HDF5 file to VTU format.
     
     Converts the specified oscar .h5 file to VTU (VTK Unstructured Grid) format.
@@ -88,6 +88,9 @@ def convertToVTU( fileName , cycles = -1 ):
         fileName (str): The name of the h5 file (with or without .h5 extension).
         cycles (int or list, optional): List or integer of cycle numbers to convert.
             If -1 (default), all cycles are converted.
+        elemGroup (str, optional): Name of the element group to export. If 'all'
+            (default), all elements are exported. The VTU output always contains
+            the full node set; this option only filters the exported cells.
                      
     Returns:
         None
@@ -98,6 +101,9 @@ def convertToVTU( fileName , cycles = -1 ):
         
         >>> # Convert specific cycles
         >>> convertToVTU('simulation.h5', cycles=[1, 5, 10])
+
+        >>> # Convert only elements in a specific group
+        >>> convertToVTU('simulation.h5', elemGroup='boundary')
         
         >>> # Convert single cycle
         >>> convertToVTU('simulation', cycles=3)
@@ -105,7 +111,7 @@ def convertToVTU( fileName , cycles = -1 ):
     
     oscarFile = oscar( fileName , cycles )
   
-    oscarFile.saveAsVTU()
+    oscarFile.saveAsVTU(cycles=cycles, elemGroup=elemGroup)
   
 #-------------------------------------------------------------------------------
 #  convertToDat
@@ -537,7 +543,8 @@ class oscar():
                 returns all element IDs in the dataset.
                 
         Returns:
-            list[int]: List of element IDs in the group.
+            list[int]: List of element IDs in the group. Returns an empty list if
+                the requested group does not exist.
             
         Examples:
             >>> oscarFile = oscar('simulation.h5')
@@ -545,14 +552,23 @@ class oscar():
             >>> all_elems = oscarFile.getElemGroup()
             >>> # Get specific group
             >>> boundary_elems = oscarFile.getElemGroup('boundary')
+            >>> # Missing groups return an empty list
+            >>> missing = oscarFile.getElemGroup('does-not-exist')
+            >>> print(missing)
+            []
         """
-    
+
         if name == "all":
             return list(range(self.elemCount("all")))
-        elif 'elementGroups' in self.data.keys(): 
+
+        if 'elementGroups' in self.data.keys() and name in self.data['elementGroups'].keys():
             return self.data['elementGroups'][name][:]
-        else:
-            return self.f['elementGroups'][name][:]        
+
+        if 'elementGroups' in self.f.keys() and name in self.f['elementGroups'].keys():
+            return self.f['elementGroups'][name][:]
+
+        return []
+    
 
 #-------------------------------------------------------------------------------
 #  elemCount
@@ -980,7 +996,7 @@ class oscar():
 #
 #-------------------------------------------------------------------------------
       
-    def saveAsVTU( self , prefix : str = 'None' , cycles : int = -1 ):
+    def saveAsVTU( self , prefix : str = 'None' , cycles : int = -1 , elemGroup : str = 'all' ):
         """Export data to VTK Unstructured Grid (VTU) format.
         
         Creates VTU files for visualization in ParaView or other VTK-compatible
@@ -991,9 +1007,13 @@ class oscar():
                 uses the prefix of the original HDF5 file.
             cycles (int or list, optional): Cycle number(s) to export. Can be an
                 integer, list, or -1 (default) to export all cycles.
+            elemGroup (str, optional): Name of the element group to export. If
+                'all' (default), all elements are exported. All mesh nodes and
+                node data are still written to the VTU file; only the elements
+                are filtered.
                 
         Returns:
-            list: List of cycle numbers that were exported.
+            list: List of requested cycle numbers.
             
         Examples:
             >>> oscarFile = oscar('simulation.h5')
@@ -1001,6 +1021,11 @@ class oscar():
             >>> oscarFile.saveAsVTU()
             >>> # Export specific cycles with custom prefix
             >>> oscarFile.saveAsVTU(prefix='results', cycles=[1, 5, 10])
+
+            >>> # Export only a single element group
+            >>> oscarFile.saveAsVTU(prefix='boundary', elemGroup='boundary')
+            >>> # Missing groups produce no VTU files for that cycle
+            >>> oscarFile.saveAsVTU(prefix='missing', elemGroup='does-not-exist')
             >>> # Export single cycle
             >>> oscarFile.saveAsVTU(cycles=3)
         """
@@ -1014,11 +1039,20 @@ class oscar():
             cycles = np.arange(1,self.cycleCount+1)
         elif type(cycles) == int:
             cycles = [cycles]  
+
+        plotCycles = []
       
         for iCyc in cycles:
             self.setCycle( iCyc )
            
             elemCount = len(familyNames)*[0]
+
+            elemIDs = list(self.getElemGroup(elemGroup))
+
+            if len(elemIDs) == 0:
+                continue
+
+            plotCycles.append(iCyc)
 
             writer = vtk.vtkXMLUnstructuredGridWriter()
   
@@ -1035,7 +1069,7 @@ class oscar():
             points = vtk.vtkPoints()
    
             coordinates = self.getCoords3()
-      
+
             for crd in coordinates:
                 points.InsertNextPoint(crd)
 
@@ -1043,7 +1077,7 @@ class oscar():
     
             #--Store elements-----------------------------
 
-            for elemID in np.arange(self.elemCount()):        
+            for elemID in elemIDs:
                 family = self.familyIDs[ elemID ]
                 if family < len(elemCount):
                     insertElement( grid , self.getElemNodes( elemID ) , self.rank() , family )
@@ -1058,7 +1092,7 @@ class oscar():
             labels = self.nodeDataSets()
       
             for label in labels:            
-                data = self.getNodeData( label )
+                data = np.asarray(self.getNodeData( label ))
                 if data.ndim == 2:
                     if label == "displacements":
                         if data.shape[1] == 2:
@@ -1086,10 +1120,10 @@ class oscar():
         
             # -- Write elemdata
   
-            labels = []#self.elemDataSets()
+            labels = self.elemDataSets()
       
             for label in labels:
-                data = self.getElemData( label )
+                data = np.asarray(self.getElemData( label , elemIDs ))
              
                 d = vtk.vtkDoubleArray()
                 d.SetName( label )
@@ -1104,81 +1138,8 @@ class oscar():
             writer.SetDataModeToAscii()
 
             writer.Write()    
-            
-            '''
-            if iCyc == 11:
-            
-                # Step 2: Set up a renderer and render window
-                stress_array = grid.GetPointData().GetArray("S22")
-                grid.GetPointData().SetScalars(stress_array)
-
-                # Create a mapper for the mesh
-                mapper = vtk.vtkDataSetMapper()
-                mapper.SetInputData(grid)
-                mapper.SetScalarRange(stress_array.GetRange())  # Set the color range based on the stress data
-                #mapper.SetScalarRange(0,100000000)
-	
-                # Apply a color map (for example, Jet)
-                apply_rainbow_color_map(mapper)
-
-                # Create an actor for the mesh
-                actor = vtk.vtkActor()
-                actor.SetMapper(mapper)
-
-                # Create a scalar bar actor for the legend
-                scalar_bar = vtk.vtkScalarBarActor()
-                scalar_bar.SetLookupTable(mapper.GetLookupTable())
-                scalar_bar.SetTitle("Stress")
-                scalar_bar.SetNumberOfLabels(4)  # Number of labels on the scalar bar
-
-                grid.GetPointData().SetVectors(grid.GetPointData().GetArray("displacements"))
-                
-                warp_vector = vtk.vtkWarpVector()
-                warp_vector.SetInputData(grid)
-                warp_vector.SetScaleFactor(1.0)  # Apply magnification factor
-
-                # Update the warp vector filter
-                warp_vector.Update()
-
-                mapper = vtk.vtkDataSetMapper()
-                #mapper.SetInputData(grid)
-                mapper.SetInputConnection(warp_vector.GetOutputPort())
-
-                actor = vtk.vtkActor()
-                actor.SetMapper(mapper)
-                
-                
-                renderer = vtk.vtkRenderer()
-                renderer.AddActor(actor)
-                renderer.AddActor(scalar_bar)  # Add the scalar bar to the renderer                
-                renderer.SetBackground(1, 1, 1)  # Set background to white
-
-                render_window = vtk.vtkRenderWindow()
-                render_window.AddRenderer(renderer)
-                render_window.SetSize(800, 800)  # Set the size of the render window
-
-                
-                renderer.ResetCamera()
-                
-                camera = renderer.GetActiveCamera()
-                camera.Azimuth(245)  # Rotate the camera around the vertical axis
-                camera.Elevation(30)                
-                camera.Zoom(0.5)
-                
-                
-                                
-                window_to_image_filter = vtk.vtkWindowToImageFilter()
-                window_to_image_filter.SetInput(render_window)
-                window_to_image_filter.Update()
-                
-                # Step 6: Save the image as a PNG file
-                writer2 = vtk.vtkPNGWriter()
-                writer2.SetFileName("output_image.png")
-                writer2.SetInputData(window_to_image_filter.GetOutput())
-                writer2.Write()
-                '''
-                                 
-        writePVD( prefix , cycles )
+                                             
+        writePVD( prefix , plotCycles )
         
         return cycles
 

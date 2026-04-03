@@ -96,6 +96,10 @@ Here's a complete example demonstrating common API usage patterns:
     # Access element groups
     boundary_elems = oscarFile.getElemGroup('boundary')
     print(f"Number of boundary elements: {len(boundary_elems)}")
+
+    # Missing groups return an empty list
+    missing_elems = oscarFile.getElemGroup('does-not-exist')
+    print(f"Missing group contents: {missing_elems}")
     
     # List available data fields
     print("Available node fields:", oscarFile.nodeDataSets())
@@ -103,7 +107,11 @@ Here's a complete example demonstrating common API usage patterns:
     
     # Export to VTU for visualization
     oscarFile.saveAsVTU(prefix='results')
+    oscarFile.saveAsVTU(prefix='boundary', elemGroup='boundary')
     print("Exported to VTU format")
+
+The ``elemGroup`` argument filters only the exported cells. The VTU file still
+contains the full node set and node-based data arrays.
 
 RVE Utilities Module
 --------------------

@@ -49,7 +49,7 @@ Command-Line Options
 
 .. code-block:: text
 
-    usage: h5tovtk [-h] [-c N] [-p PREFIX] [-v] filename
+    usage: h5tovtk [-h] [-c N] [-p PREFIX] [-g GROUP] [-v] filename
 
     positional arguments:
       filename              HDF5 file name (with or without .h5 extension)
@@ -59,6 +59,8 @@ Command-Line Options
       -c N, --cycle N       Specific cycle number to convert (default: all cycles)
       -p PREFIX, --prefix PREFIX
                             Output prefix for VTU files (default: use input filename)
+      -g GROUP, --group GROUP
+                Element group to export (default: all elements)
       -v, --verbose         Increase output verbosity
 
 Output Files
@@ -168,6 +170,12 @@ The CLI internally uses the ``oscar`` class. For programmatic access, use the Py
     
     # Custom output prefix
     h5file.saveAsVTU(prefix='results')
+
+    # Export only a single element group
+    h5file.saveAsVTU(prefix='boundary', elemGroup='boundary')
+
+  The ``elemGroup`` argument filters cells only. All points and point-data arrays
+  remain present in the output VTU file.
 
 For complete API documentation, see :doc:`api`.
 
