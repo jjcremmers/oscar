@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oscar.RVEutils &mdash; Oscar  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Oscar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html#api-reference">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Python API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Oscar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oscar.RVEutils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oscar.RVEutils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.oscar</span> <span class="kn">import</span> <span class="n">oscar</span>
+   
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getFileName</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="getFileName">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getFileName">[docs]</a>
+<span class="k">def</span> <span class="nf">getFileName</span><span class="p">(</span> <span class="n">name</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">prefix</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the filename in HDF5 format with proper prefix and extension.</span>
+<span class="sd">    </span>
+<span class="sd">    Constructs a filename by adding an optional prefix and ensuring the .h5</span>
+<span class="sd">    extension is present. If a prefix is provided and the name doesn&#39;t start</span>
+<span class="sd">    with it, the prefix is prepended with an underscore separator.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Base name of the HDF5 file (oscar format)</span>
+<span class="sd">        prefix (str, optional): Prefix to prepend to the filename. Defaults to None.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Formatted filename with prefix and .h5 extension</span>
+<span class="sd">        </span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; getFileName(&quot;mydata&quot;, prefix=&quot;sim&quot;)</span>
+<span class="sd">        &quot;sim_mydata.h5&quot;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+  
+    <span class="k">if</span> <span class="n">prefix</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">name</span>
+   
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;h5&quot;</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
+  
+    <span class="k">return</span> <span class="n">output</span></div>
+
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getConductivity</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+      
+<div class="viewcode-block" id="getConductivity">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getConductivity">[docs]</a>
+<span class="k">def</span> <span class="nf">getConductivity</span><span class="p">(</span> <span class="n">baseName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">props</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the thermal conductivity tensor components from RVE simulations.</span>
+<span class="sd">    </span>
+<span class="sd">    Reads thermal conductivity data from three separate HDF5 files (one for each</span>
+<span class="sd">    direction) and returns the conductivity components as a list.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        baseName (str): Base name of the HDF5 files (oscar format)</span>
+<span class="sd">        props (str, optional): Additional properties parameter. Defaults to None.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: Thermal conductivity components [k_x, k_y, k_z]</span>
+<span class="sd">        </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Expects files named &quot;cond_{baseName}_0.h5&quot;, &quot;cond_{baseName}_1.h5&quot;,</span>
+<span class="sd">        and &quot;cond_{baseName}_2.h5&quot; to exist.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+  
+    <span class="n">cond</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+  
+        <span class="n">fileName</span> <span class="o">=</span> <span class="s2">&quot;cond_&quot;</span> <span class="o">+</span> <span class="n">baseName</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.h5&quot;</span>    
+    
+        <span class="n">h5file</span>  <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">)</span>  
+                      
+        <span class="n">cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h5file</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s2">&quot;thermalCond&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">cond</span></div>
+
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getCTE</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="getCTE">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getCTE">[docs]</a>
+<span class="k">def</span> <span class="nf">getCTE</span><span class="p">(</span> <span class="n">baseName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the coefficients of thermal expansion (CTE) as an array.</span>
+<span class="sd">    </span>
+<span class="sd">    Reads thermal expansion coefficients from an HDF5 file containing</span>
+<span class="sd">    RVE homogenization results.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        baseName (str): Base name of the HDF5 file (oscar format)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: Coefficients of thermal expansion as a list</span>
+<span class="sd">        </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Expects a file named &quot;cte_{baseName}.h5&quot; to exist with macro field</span>
+<span class="sd">        data for &quot;thermalExpansion&quot;.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s2">&quot;cte_&quot;</span> <span class="o">+</span> <span class="n">baseName</span> <span class="o">+</span><span class="s2">&quot;.h5&quot;</span>    
+   
+    <span class="n">h5file</span>  <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">)</span>  
+                  
+    <span class="k">return</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s2">&quot;thermalExpansion&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+  
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getMechanical</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="getMechanical">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getMechanical">[docs]</a>
+<span class="k">def</span> <span class="nf">getMechanical</span><span class="p">(</span> <span class="n">baseName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">,</span> <span class="n">eps</span> <span class="p">:</span> <span class="nb">float</span>  <span class="o">=</span> <span class="mf">0.01</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the mechanical properties from RVE homogenization analysis.</span>
+<span class="sd">    </span>
+<span class="sd">    Computes effective mechanical properties (Young&#39;s moduli, shear moduli,</span>
+<span class="sd">    Poisson&#39;s ratios, and stiffness matrix) by collecting stress responses</span>
+<span class="sd">    from six load cases corresponding to unit strains in each direction.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        baseName (str): Base name of the HDF5 files (oscar format)</span>
+<span class="sd">        eps (float, optional): Strain magnitude used in the simulations. Defaults to 0.01.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple containing:</span>
+<span class="sd">            - E (list): Young&#39;s moduli [E_x, E_y, E_z]</span>
+<span class="sd">            - G (list): Shear moduli [G_xy, G_xz, G_yz]</span>
+<span class="sd">            - nu (list): Poisson&#39;s ratios [nu_xy, nu_yz, nu_xz]</span>
+<span class="sd">            - cmat (numpy.ndarray): 6x6 stiffness matrix</span>
+<span class="sd">            </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Expects files named &quot;mech_{baseName}_0.h5&quot; through &quot;mech_{baseName}_5.h5&quot;</span>
+<span class="sd">        corresponding to six independent strain states.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+  
+    <span class="n">stress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>  
+    <span class="n">E</span>  <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">G</span>  <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nu</span> <span class="o">=</span> <span class="p">[]</span>  
+  
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+  
+        <span class="n">fileName</span> <span class="o">=</span> <span class="s2">&quot;mech_&quot;</span> <span class="o">+</span> <span class="n">baseName</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.h5&quot;</span>
+  
+        <span class="n">h5file</span>  <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">)</span>  
+                  
+        <span class="n">stress</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s2">&quot;stresses&quot;</span><span class="p">)</span>
+       
+    <span class="n">cmat</span> <span class="o">=</span> <span class="n">stress</span> <span class="o">/</span> <span class="n">eps</span>
+    <span class="n">smat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">cmat</span><span class="p">)</span>
+  
+    <span class="n">E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+  
+    <span class="n">G</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+  
+    <span class="n">nu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">smat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">nu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">smat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">nu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">smat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">smat</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+  
+    <span class="k">return</span> <span class="n">E</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">nu</span><span class="p">,</span><span class="n">cmat</span></div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getCapacity</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+  
+<div class="viewcode-block" id="getCapacity">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getCapacity">[docs]</a>
+<span class="k">def</span> <span class="nf">getCapacity</span><span class="p">(</span> <span class="n">baseName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">  </span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the specific heat capacity from RVE homogenization.</span>
+<span class="sd">    </span>
+<span class="sd">    Reads the volumetric average specific heat capacity from an HDF5 file</span>
+<span class="sd">    containing homogenized thermal properties.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        baseName (str): Base name of the HDF5 file (oscar format)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Specific heat capacity value</span>
+<span class="sd">        </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Expects a file named &quot;capac_{baseName}.h5&quot; to exist with macro field</span>
+<span class="sd">        data for &quot;specificCapac&quot;.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+  
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s2">&quot;capac_&quot;</span> <span class="o">+</span> <span class="n">baseName</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
+  
+    <span class="n">h5file</span>  <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">)</span>  
+                        
+    <span class="k">return</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s2">&quot;specificCapac&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  </div>
+
+
+<span class="c1">#-------------------------------------------------------------------------------</span>
+<span class="c1">#  getDensity</span>
+<span class="c1">#-------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="getDensity">
+<a class="viewcode-back" href="../../api.html#oscar.RVEutils.getDensity">[docs]</a>
+<span class="k">def</span> <span class="nf">getDensity</span><span class="p">(</span> <span class="n">baseName</span> <span class="p">:</span> <span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">  </span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the effective density from RVE homogenization.</span>
+<span class="sd">    </span>
+<span class="sd">    Reads the volumetric average density from an HDF5 file containing</span>
+<span class="sd">    homogenized material properties.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        baseName (str): Base name of the HDF5 file (oscar format)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Density value</span>
+<span class="sd">        </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Expects a file named &quot;capac_{baseName}.h5&quot; to exist with macro field</span>
+<span class="sd">        data for &quot;density&quot;.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+  
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s2">&quot;capac_&quot;</span> <span class="o">+</span> <span class="n">baseName</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
+  
+    <span class="n">h5file</span>  <span class="o">=</span> <span class="n">oscar</span><span class="p">(</span> <span class="n">fileName</span> <span class="p">)</span>  
+                        
+    <span class="k">return</span> <span class="n">h5file</span><span class="o">.</span><span class="n">getMacroFieldData</span><span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Joris Remmers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
