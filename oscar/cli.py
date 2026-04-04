@@ -12,6 +12,23 @@ import os
 import sys
 
 
+def _normalize_input_filename(file_name):
+    """Return a normalized HDF5 filename and processor metadata."""
+
+    if file_name.lower().endswith('.h5'):
+        file_name = file_name[:-3]
+
+    n_proc = 0
+    prefix = file_name
+
+    if os.path.exists(prefix + '_p0.h5'):
+        while os.path.exists(prefix + '_p' + str(n_proc) + '.h5'):
+            n_proc += 1
+        return prefix, prefix, n_proc
+
+    return file_name + '.h5', None, n_proc
+
+
 def main():
     """Main CLI entry point for h5tovtk converter.
     
@@ -72,25 +89,13 @@ Examples:
                         action='store_true')
     
     args = parser.parse_args()
-    fileName = args.filename
-    nProc = 0
-    
-    # Handle file name and check for multi-processor files
-    if not fileName.endswith('.h5'):
-        if os.path.exists(fileName + '_p0.h5'):
-            prefix = fileName
-            while os.path.exists(fileName + '_p' + str(nProc) + '.h5'):
-                nProc = nProc + 1
-            
-            if args.verbose:
-                print(f"Processing multi-processor files with prefix '{prefix}' "
-                      f"for {nProc} processors")
+    fileName, prefix, nProc = _normalize_input_filename(args.filename)
+
+    if args.verbose:
+        if nProc > 0:
+            print(f"Processing multi-processor files with prefix '{prefix}' "
+                  f"for {nProc} processors")
         else:
-            fileName = fileName + '.h5'
-            if args.verbose:
-                print(f"Processing file: {fileName}")
-    else:
-        if args.verbose:
             print(f"Processing file: {fileName}")
     
     # Check if file exists

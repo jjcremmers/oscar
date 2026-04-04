@@ -9,6 +9,9 @@ Command-Line Examples
 Using h5tovtk
 ~~~~~~~~~~~~~
 
+The input filename can be passed either with or without the ``.h5`` extension
+for single-file results.
+
 **Convert all cycles:**
 
 .. code-block:: bash
@@ -16,6 +19,10 @@ Using h5tovtk
     h5tovtk simulation.h5
 
 This converts all time steps in the file.
+
+The following command is equivalent::
+
+    h5tovtk simulation
 
 **Convert a specific cycle:**
 

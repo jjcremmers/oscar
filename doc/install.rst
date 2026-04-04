@@ -56,6 +56,7 @@ After installation, verify that the package is correctly installed:
     h5tovtk --help
 
 You should see the help message for the h5tovtk command.
+Input files can be provided either as ``simulation`` or ``simulation.h5``.
 
 **Test the Python API:**
 

@@ -4,6 +4,23 @@ from oscar import oscar,writePVD
 import argparse
 import os
 
+
+def normalize_input_filename(file_name):
+
+    if file_name.lower().endswith(".h5"):
+        file_name = file_name[:-3]
+
+    nProc = 0
+    prefix = file_name
+
+    if os.path.exists(prefix + "_p0.h5"):
+        while os.path.exists(prefix + "_p" + str(nProc) + ".h5"):
+            nProc = nProc + 1
+        return prefix, prefix, nProc
+
+    return file_name + ".h5", None, nProc
+
+
 def main():
     
     parser = argparse.ArgumentParser(description=
@@ -20,19 +37,13 @@ def main():
                         action="store_true")    
                         
     args     = parser.parse_args()
-    fileName = args.arg1
-    nProc    = 0
-        
-    if not fileName.endswith(".h5"):
-        if os.path.exists(fileName+"_p0.h5"):  
-            prefix = fileName
-            while os.path.exists(fileName+"_p" + str(nProc) + ".h5"):
-                nProc = nProc + 1
-            print("Processing the files with prefix '%s' for %d processors" 
-                   %(prefix,nProc) )      
-        else:
-            fileName = fileName + ".h5"               
-            print("Processing the file : %s" %fileName)    
+    fileName, prefix, nProc = normalize_input_filename(args.arg1)
+
+    if nProc > 0:
+        print("Processing the files with prefix '%s' for %d processors"
+               %(prefix,nProc) )
+    else:
+        print("Processing the file : %s" %fileName)
         
     if nProc == 0:  
                              
